@@ -1,0 +1,9 @@
+from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, LlamaTokenizerFast
+
+from .configuration_janus_foundation import JanusFoundationConfig
+from .modeling_janus_foundation import JanusFoundationModel
+
+
+AutoConfig.register("janus_foundation", JanusFoundationConfig)
+AutoModelForCausalLM.register(JanusFoundationConfig, JanusFoundationModel)
+AutoTokenizer.register(JanusFoundationConfig, fast_tokenizer_class=LlamaTokenizerFast)

@@ -1,0 +1,8 @@
+from transformers import AutoConfig, AutoModelForCausalLM
+
+from .configuration_qwen2_5_vl_foundation import Qwen25VLFoundationConfig
+from .modeling_qwen2_5_vl_foundation import Qwen25VLFoundationModel
+
+
+AutoConfig.register("qwen2_5_vl_foundation", Qwen25VLFoundationConfig)
+AutoModelForCausalLM.register(Qwen25VLFoundationConfig, Qwen25VLFoundationModel)

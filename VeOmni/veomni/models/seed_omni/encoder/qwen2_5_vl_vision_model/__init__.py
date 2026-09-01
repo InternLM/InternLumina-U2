@@ -1,0 +1,10 @@
+from transformers import AutoConfig, AutoModel, AutoProcessor
+
+from .configuration_qwen2_5_vl_vision_model import Qwen25VLVisionModelConfig
+from .modeling_qwen2_5_vl_vision_model import Qwen25VLVisionModel
+from .processing_qwen2_5_vl_vision_model import Qwen25VLVisionModelProcessor
+
+
+AutoConfig.register("qwen2_5_vl_vision_model", Qwen25VLVisionModelConfig)
+AutoModel.register(Qwen25VLVisionModelConfig, Qwen25VLVisionModel)
+AutoProcessor.register(Qwen25VLVisionModelConfig, Qwen25VLVisionModelProcessor)

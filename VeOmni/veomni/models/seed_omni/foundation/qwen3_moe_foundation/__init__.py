@@ -1,0 +1,9 @@
+from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, Qwen2TokenizerFast
+
+from .configuration_qwen3_moe_foundation import Qwen3MoeFoundationConfig
+from .modeling_qwen3_moe_foundation import Qwen3MoeFoundationModel
+
+
+AutoConfig.register("qwen3_moe_foundation", Qwen3MoeFoundationConfig)
+AutoModelForCausalLM.register(Qwen3MoeFoundationConfig, Qwen3MoeFoundationModel)
+AutoTokenizer.register(Qwen3MoeFoundationConfig, fast_tokenizer_class=Qwen2TokenizerFast)

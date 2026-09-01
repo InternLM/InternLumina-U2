@@ -1,0 +1,10 @@
+from transformers import AutoConfig, AutoModel, AutoProcessor
+
+from .configuration_qwen2_5_omni_audio_model import Qwen25OmniAudioModelConfig
+from .modeling_qwen2_5_omni_audio_model import Qwen25OmniAudioModel
+from .processing_qwen2_5_omni_audio_model import Qwen25OmniAudioModelProcessor
+
+
+AutoConfig.register("qwen2_5_omni_audio_model", Qwen25OmniAudioModelConfig)
+AutoModel.register(Qwen25OmniAudioModelConfig, Qwen25OmniAudioModel)
+AutoProcessor.register(Qwen25OmniAudioModelConfig, Qwen25OmniAudioModelProcessor)

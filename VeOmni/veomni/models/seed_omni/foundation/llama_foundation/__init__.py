@@ -1,0 +1,9 @@
+from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, LlamaTokenizerFast
+
+from .configuration_llama_foundation import LlamaFoundationConfig
+from .modeling_llama_foundation import LlamaFoundationModel
+
+
+AutoConfig.register("llama_foundation", LlamaFoundationConfig)
+AutoModelForCausalLM.register(LlamaFoundationConfig, LlamaFoundationModel)
+AutoTokenizer.register(LlamaFoundationConfig, fast_tokenizer_class=LlamaTokenizerFast)

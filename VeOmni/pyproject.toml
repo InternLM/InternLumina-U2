@@ -1,0 +1,160 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+"Homepage" = "https://github.com/ByteDance-Seed/VeOmni"
+"Source Code" = "https://github.com/ByteDance-Seed/VeOmni"
+
+[project]
+name = "veomni"
+dynamic = ["version"]
+description = "VeOmni: Scaling any Modality Model Training to any Accelerators with PyTorch native Training Framework"
+authors = [
+  { name="Fazzie", email="maqianli.fazzie@bytedance.com" },
+]
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+
+dependencies = [
+  "blobfile>=3.0.0",
+  "datasets>=2.16.0,<=2.21.0",
+  "packaging>=23.0,<26.0",
+  "torchdata>=0.8.0,<1.0",
+  "tiktoken>=0.9.0",
+  "diffusers>=0.30.0,<=0.31.0",
+  "transformers[torch]>=4.51.3,<4.57.0",
+  "psutil",
+  "timm",
+  "wandb"
+]
+
+[project.optional-dependencies]
+# TODO: Delete this after we switch to uv to run CI tasks.
+dev = [
+  "pre-commit>=4.0.0,<5.0",
+  "ruff>=0.7.0,<1.0",
+  "pytest>=6.0.0,<8.0",
+  "expecttest>=0.3.0,<0.4"
+]
+bytecheckpoint = [
+  "bytecheckpoint",
+]
+audio = [
+  "av>=14.3.0,<15.0",
+  "librosa>=0.11.0,<0.12",
+  "soundfile>=0.13.1,<0.14"
+]
+dit = [
+  "diffusers>=0.30.0,<=0.31.0",
+  "bitsandbytes>=0.46.0,<=0.47.0"
+]
+npu = [
+  "torch==2.6.0+cpu",
+  "torchvision==0.21.0+cpu",
+  "torchaudio==2.6.0+cpu",
+  "torch-npu==2.6.0",
+]
+gpu =[
+  "torch==2.7.1+cu128",
+  "torchvision==0.22.1+cu128",
+  "torchaudio==2.7.1+cu128",
+  "liger-kernel",
+  "flash-attn",
+]
+megatron = [
+  "megatron-energon>=7.2.1"
+]
+
+[dependency-groups]
+# Follow the best practice in https://docs.astral.sh/uv/concepts/projects/dependencies/#development-dependencies
+# to manage dev dependencies (i.e., dependencies that are only used in development) like
+# test, lint and doc tools.
+dev = [
+  {include-group = "lint"},
+  {include-group = "test"},
+]
+lint = [
+  "pre-commit",
+  "ruff",
+]
+test = [
+  "pytest",
+  "expecttest"
+]
+
+
+[tool.uv]
+# This locks the uv version so that we have a consistent uv behavior across the board.
+# Inconsistent uv versions might generate different uv lock files which creates chaos.
+#
+# NOTE 1: Update this at least once per month as uv releases new version every week.
+# NOTE 2: When updating this line, make sure to update Dockerfile under docker/ to the same
+#         version and release new docker images.
+required-version = "==0.8.14"
+# This section is used to force version when two packages have non-overlapping dependencies.
+override-dependencies = [
+    # Adding the (extra == 'gpu') mark to declare this override is only for gpu extra.
+    # Without this mark, uv would download torch/torchaudio/torchvision unexpectedly from
+    # byted pypi without using the cu126 versions.
+    # Ref: https://github.com/astral-sh/uv/issues/11153
+    "torch==2.7.1+cu128; (extra == 'gpu')",
+    "torchaudio==2.7.1+cu128; (extra == 'gpu')",
+    "torchvision==0.22.1+cu128; (extra == 'gpu')",
+    # Adding explicit override for other backends as well. Otherwise these libraries
+    # will be excluded for other backends.
+    "torch==2.6.0+cpu; (extra == 'npu')",
+    "torchaudio==2.6.0+cpu; (extra == 'npu')",
+    "torchvision==0.21.0+cpu; (extra == 'npu')",
+    # Fixate to a specific transformers version since upgrading transformers is a large task.
+    "transformers==4.56.2",
+]
+conflicts = [
+  [
+    { extra = "gpu" },
+    { extra = "npu" },
+  ],
+]
+
+[tool.uv.sources]
+# Download torch packages from the official index to ensure we get the proper CUDA built version.
+torch = {index = "pytorch"}
+torchvision = {index = "pytorch"}
+torchaudio = {index = "pytorch"}
+# Currently flash-attn is limited by diffusers (<=2.7.4).
+flash-attn = { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1+cu12torch2.7cxx11abiTRUE-cp311-cp311-linux_x86_64.whl"}
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/"
+explicit = true
+
+[tool.setuptools.dynamic]
+version = {attr = "veomni.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests*", "ci*", "configs*", "veomni_patch", "tasks", "scripts"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 119
+indent-width = 4
+
+[tool.ruff.lint]
+ignore = ["C901", "E501", "E741", "W605", "C408"]
+select = ["C", "E", "F", "I", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401", "F403", "F811"]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+known-first-party = ["veomni"]
+known-third-party = ["torch", "transformers", "vescale", "wandb"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

@@ -1,0 +1,8 @@
+from transformers import AutoConfig, AutoModelForCausalLM
+
+from .configuration_seed_oss_foundation import SeedOssFoundationConfig
+from .modeling_seed_oss_foundation import SeedOssFoundationModel
+
+
+AutoConfig.register("seed_oss_foundation", SeedOssFoundationConfig)
+AutoModelForCausalLM.register(SeedOssFoundationConfig, SeedOssFoundationModel)

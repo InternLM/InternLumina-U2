@@ -1,0 +1,10 @@
+from transformers import AutoConfig, AutoModel, AutoProcessor
+
+from .configuration_qwen2_5_omni_vision_model import Qwen25OmniVisionModelConfig
+from .modeling_qwen2_5_omni_vision_model import Qwen25OmniVisionModel
+from .processing_qwen2_5_omni_vision_model import Qwen25OmniVisionModelProcessor
+
+
+AutoConfig.register("qwen2_5_omni_vision_model", Qwen25OmniVisionModelConfig)
+AutoModel.register(Qwen25OmniVisionModelConfig, Qwen25OmniVisionModel)
+AutoProcessor.register(Qwen25OmniVisionModelConfig, Qwen25OmniVisionModelProcessor)

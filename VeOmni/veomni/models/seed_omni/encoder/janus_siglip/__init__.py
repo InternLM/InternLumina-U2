@@ -1,0 +1,10 @@
+from transformers import AutoConfig, AutoModel, AutoProcessor
+
+from .configuration_janus_siglip import JanusSigLIPEncoderConfig
+from .modeling_janus_siglip import JanusSiglipEncoder
+from .processing_janus_siglip import JanusSiglipEncoderProcessor
+
+
+AutoConfig.register("janussiglip_encoder", JanusSigLIPEncoderConfig)
+AutoModel.register(JanusSigLIPEncoderConfig, JanusSiglipEncoder)
+AutoProcessor.register(JanusSigLIPEncoderConfig, JanusSiglipEncoderProcessor)

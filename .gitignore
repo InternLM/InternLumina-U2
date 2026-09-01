@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pt
+*.pth
+*.safetensors
+output/
+xllmx_data_cache/
+atoken_inference/checkpoints/
+*.log
+.env
+.env.*
+logfile
+VeOmni/veomni.egg-info/
+third_party/
