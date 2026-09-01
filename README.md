@@ -4,7 +4,7 @@
 
 *Shanghai AI Laboratory*
 
-[[📑 Technical Report (Coming Soon)](#)] &emsp; [[🌐 Project Page](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 Model](https://huggingface.co/internlm/InternLumina-U2)]
+[[📑 Technical Report (Coming Soon)](#)] &emsp; [[🌐 Project Page](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 Model (Coming Soon)](#)]
 
 [English](./README.md) | [简体中文](./README_zh-CN.md)
 
@@ -46,6 +46,8 @@ Intern Lumina U2 explores a new path: **fully-discrete multi-codebook modeling**
 
 ## 🏆 Benchmarks
 
+Preliminary, partial results. Full comparison tables will appear in the upcoming technical report.
+
 | Category | Benchmark | Score |
 |---|---|---|
 | Chart / document understanding | ChartQA | 86.52 |
@@ -60,7 +62,7 @@ Intern Lumina U2 explores a new path: **fully-discrete multi-codebook modeling**
 | | DPG-Bench | 87.10 |
 | Image editing | ImgEdit | 3.83 |
 
-Intern Lumina U2 surpasses unified models such as InternVL-U, LLaDA2.0-Uni, Show-o2 and Lumina-DiMOO on fine-grained understanding and generation benchmarks, and outperforms the understanding-only InternVL3-8B on MathVision and DynaMath. See the upcoming tech report for full comparison tables.
+Intern Lumina U2 surpasses unified models such as InternVL-U, LLaDA2.0-Uni, Show-o2 and Lumina-DiMOO on fine-grained understanding and generation benchmarks, and outperforms the understanding-only InternVL3-8B on MathVision and DynaMath.
 
 ## 📦 Release Scope
 
