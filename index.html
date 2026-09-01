@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Intern Lumina U2 — a unified multi-codebook model for visual understanding, image generation, and image editing." />
+    <title>Intern Lumina U2</title>
+    <link rel="icon" href="assets/intern-lumina-u2-star-mark.jpg" type="image/jpeg" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="mosaic.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="shell nav-inner">
+        <a class="brand" href="#overview" aria-label="Intern Lumina U2 home">
+          <img src="assets/intern-lumina-u2-star-mark.jpg" alt="Intern Lumina U2 star logo" />
+          <span>Intern Lumina <b>U2</b></span>
+        </a>
+        <nav aria-label="Primary navigation">
+          <a href="#method">Method</a>
+          <a href="#demos">Demos</a>
+          <a href="#results">Results</a>
+          <a href="#citation">Resources</a>
+        </nav>
+        <div class="release-links" aria-label="Release resources">
+          <span title="Technical report is coming soon">Report <i>soon</i></span>
+          <a href="https://github.com/InternLM/InternLumina-U2" target="_blank" rel="noopener" title="Inference code on GitHub">Code</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="overview" aria-labelledby="project-title">
+        <div class="hero-mosaic" aria-hidden="true">
+          <span class="hero-tile hero-tile--city"></span><span class="hero-tile hero-tile--scarf"></span><span class="hero-tile hero-tile--gold-leaf"></span><span class="hero-tile hero-tile--graphite"></span><span class="hero-tile hero-tile--three-d-room"></span><span class="hero-tile hero-tile--street-art"></span>
+          <span class="hero-tile hero-tile--video"></span><span class="hero-tile hero-tile--butterfly"></span><span class="hero-tile hero-tile--painting"></span><span class="hero-tile hero-tile--plant"></span><span class="hero-tile hero-tile--three-d-building"></span><span class="hero-tile hero-tile--coast"></span>
+          <span class="hero-tile hero-tile--phase"></span><span class="hero-tile hero-tile--future-car"></span><span class="hero-tile hero-tile--flowers"></span><span class="hero-tile hero-tile--forest"></span><span class="hero-tile hero-tile--rainy-room"></span><span class="hero-tile hero-tile--watercolor"></span>
+        </div>
+        <div class="hero-scrim" aria-hidden="true"></div>
+        <div class="hero-inner shell">
+          <div class="hero-copy">
+            <h1 id="project-title">Intern Lumina <em>U2</em></h1>
+            <p class="hero-title">A Multi-Codebook Diffusion Large Language Model for Omni-Visual Understanding and Image Generation</p>
+            <p class="hero-abstract">Intern Lumina U2 unifies language, images, video, and 3D for text question answering, image understanding and editing, image generation, video understanding, and 3D understanding.</p>
+            <div class="hero-actions">
+              <a class="action action-dark" href="#demos">Explore demos <span>↓</span></a>
+              <a class="action action-light" href="#results">View results <span>↓</span></a>
+            </div>
+          </div>
+          <aside class="hero-logo-wrap" aria-label="Intern Lumina U2 project mark">
+            <img class="hero-logo" src="assets/intern-lumina-u2-logo-transparent.png" alt="Intern Lumina U2 star mascot and wordmark" />
+          </aside>
+        </div>
+      </section>
+
+      <figure class="teaser teaser-hero" aria-labelledby="teaser-caption">
+        <div class="figure-frame"><img src="method/teaser.png" alt="Intern Lumina U2 capabilities and benchmark overview" /></div>
+        <figcaption id="teaser-caption"><b>Figure 1.</b> Capabilities across image generation and editing, image understanding, video understanding, and 3D understanding.</figcaption>
+      </figure>
+
+      <section class="results section shell" id="results" aria-labelledby="results-title">
+        <div class="section-heading results-heading"><h2 id="results-title">Experimental Results</h2></div>
+        <div class="table-scroll" role="region" aria-label="Benchmark comparison table" tabindex="0">
+          <table class="benchmark-table">
+            <thead>
+              <tr><th>Task family</th><th>Benchmark</th><th>InternVL-U</th><th>LLaDA2.0-Uni</th><th>LLaDA-o</th><th>Intern Lumina U2</th></tr>
+            </thead>
+            <tbody>
+              <tr class="table-group"><td colspan="6">Visual reasoning &amp; perception</td></tr>
+              <tr><td>Document &amp; chart</td><td>ChartQA ↑</td><td>76.60</td><td>80.10</td><td>87.90</td><td class="ours">86.52</td></tr>
+              <tr><td>Document &amp; chart</td><td>CharXiv-DQ ↑</td><td>53.30</td><td>68.40</td><td>69.80</td><td class="ours">83.65</td></tr>
+              <tr><td>Perception</td><td>HallusionBench ↑</td><td>44.80</td><td>50.20</td><td>47.40</td><td class="ours">62.15</td></tr>
+              <tr><td>Knowledge</td><td>MMMU-Pro ↑</td><td>20.80</td><td>34.00</td><td>28.30</td><td class="ours">36.13</td></tr>
+              <tr><td>Math reasoning</td><td>MathVision ↑</td><td>22.10</td><td>26.70</td><td>15.70</td><td class="ours">33.22</td></tr>
+              <tr><td>Math reasoning</td><td>DynaMath ↑</td><td>46.97</td><td>46.89</td><td>40.58</td><td class="ours">56.37</td></tr>
+              <tr class="table-group"><td colspan="6">Temporal understanding</td></tr>
+              <tr><td>Video</td><td>Video-MME ↑</td><td>53.00</td><td>43.76</td><td>44.90</td><td class="ours">51.26</td></tr>
+              <tr><td>Video</td><td>MVBench ↑</td><td>59.61</td><td>48.97</td><td>47.16</td><td class="ours">59.74</td></tr>
+              <tr><td>Video</td><td>MLVU ↑</td><td>57.27</td><td>45.81</td><td>48.62</td><td class="ours">57.03</td></tr>
+              <tr class="table-group"><td colspan="6">Generation &amp; editing</td></tr>
+              <tr><td>Image generation</td><td>GenEval ↑</td><td>0.85</td><td>0.89</td><td>0.86</td><td class="ours">0.81</td></tr>
+              <tr><td>Image generation</td><td>DPG ↑</td><td>85.18</td><td>87.76</td><td>87.04</td><td class="ours">87.10</td></tr>
+              <tr><td>Image generation</td><td>TIIF Short / Long ↑</td><td>74.90 / 73.90</td><td>—</td><td>—</td><td class="ours">84.60 / 85.95</td></tr>
+              <tr><td>Image editing</td><td>ImgEdit ↑</td><td>3.67</td><td>3.92</td><td>—</td><td class="ours">3.8307</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="results-footer"><p>Full comparison tables will appear in the upcoming technical report.</p></div>
+      </section>
+
+      <section class="method section shell" id="method" aria-labelledby="method-title">
+        <div class="method-intro">
+          <h2 id="method-title">Method.</h2>
+        </div>
+        <figure class="method-figure method-overview">
+          <div class="method-figure-heading method-architecture-heading"><h3>A unified architecture<br />for <em>omni-visual tasks.</em></h3></div>
+          <img src="method/method-main.png" alt="Intern Lumina U2 unified multi-modal architecture" />
+          <figcaption><b>Figure 2. Architecture overview.</b> The encoder and two task heads share a MoE Diffusion LLM backbone across visual understanding, image generation, and editing.</figcaption>
+        </figure>
+        <div class="method-details">
+          <figure class="method-figure">
+            <div class="method-figure-heading"><h3>Discrete VQ levels for visual tokens.</h3></div>
+            <img src="method/架构对比.png" alt="Comparison of universal, separate, and multi-codebook visual representations" />
+            <figcaption><b>Figure 3. Representation design.</b> The proposed design uses discrete VQ levels to represent each visual position.</figcaption>
+          </figure>
+          <figure class="method-figure">
+            <div class="method-figure-heading"><h3>Parallel positions, sequential codebooks.</h3></div>
+            <img src="method/多码本输出设计.png" alt="Multi-codebook autoregressive head for training and inference" />
+            <figcaption><b>Figure 4. Prediction head.</b> Spatial positions are processed in parallel and codebooks are decoded in sequence.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="gallery section" id="demos" aria-labelledby="demos-title">
+        <div class="shell">
+          <div class="demo-intro"><h2 id="demos-title">Demo <em>Examples.</em></h2></div>
+          <div class="section-heading split-heading"><div><h3>Text-to-Image Generation</h3></div></div>
+          <div class="generation-showcase" id="generation" aria-label="Text-to-image generation examples">
+            <div class="generation-grid" id="generation-gallery"></div>
+          </div>
+        </div>
+
+        <div class="gallery-rails">
+          <section class="task-rail shell" id="editing"><div class="task-head"><div><span>✦</span><h3>Image editing</h3></div></div><div class="editing-showcase" id="editing-gallery" aria-label="Image editing examples"></div></section>
+          <section class="task-rail shell qa-task" id="understanding"><div class="task-head"><div><span>✦</span><h3>Image understanding</h3></div></div><div class="qa-grid image-understanding-grid" id="image-understanding-gallery" aria-label="Image understanding examples"></div></section>
+          <section class="task-rail shell qa-task" id="three-d"><div class="task-head"><div><span>✦</span><h3>3D understanding</h3></div></div><div class="qa-grid three-d-grid" id="three-d-gallery" aria-label="3D understanding examples"></div></section>
+          <section class="task-rail shell video-task" id="video"><div class="task-head"><div><span>✦</span><h3>Video understanding</h3></div></div><div class="video-gallery" id="video-gallery" aria-label="Video understanding examples"></div></section>
+        </div>
+      </section>
+
+      <section class="citation section shell" id="citation"><div class="resource-placeholder"><p class="overline"><span></span> Resources</p><h2>Coming <em>soon.</em></h2></div></section>
+    </main>
+
+    <footer><div class="shell footer-inner"><a class="brand" href="#overview"><img src="assets/intern-lumina-u2-star-mark.jpg" alt="" /><span>Intern Lumina <b>U2</b></span></a><p>Shanghai AI Laboratory · 2026</p><a class="text-link" href="#overview">Back to top <span>↑</span></a></div></footer>
+    <script src="script.js"></script>
+  </body>
+</html>

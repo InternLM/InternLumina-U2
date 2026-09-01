@@ -1,0 +1,705 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>Paper cases — image understanding with reasoning</title>
+<style>
+ body{font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+      margin:0;padding:28px;background:#faf9f7;color:#1f2328;max-width:1400px}
+ h1{font-size:24px;margin:0 0 4px}
+ .sub{color:#656d76;margin:0 0 26px}
+ .case{background:#fff;border:1px solid #d8dee4;border-radius:10px;padding:20px;margin:0 0 22px}
+ .case h2{font-size:16px;margin:0 0 14px;font-weight:600}
+ .tag{display:inline-block;background:#eef1f4;color:#3d444d;border-radius:5px;
+       padding:2px 8px;font-size:11.5px;font-weight:500;margin-left:5px;vertical-align:middle}
+ .grid{display:grid;grid-template-columns:minmax(240px,400px) 1fr;gap:24px;align-items:start}
+ @media(max-width:900px){.grid{grid-template-columns:1fr}}
+ img{max-width:100%;height:auto;border:1px solid #d8dee4;border-radius:6px;background:#fff}
+ h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#656d76;margin:14px 0 6px}
+ .q{background:#f6f8fa;border-left:3px solid #9aa7b2;padding:10px 12px;border-radius:0 5px 5px 0}
+ .r{white-space:normal;font-size:14px}
+ .ans{margin-top:14px;padding-top:12px;border-top:1px solid #eaeef2;font-size:14px}
+ .ok{color:#1a7f37;font-weight:600}
+</style></head><body>
+<h1>Image-understanding cases with model reasoning</h1>
+<p class="sub">40 cases &middot; all answers verified correct &middot;
+ reasoning and answer come from the same run</p>
+
+<section class="case">
+  <h2>#1 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Medium</span>
+      <span class="tag">Diagnostics_and_Laboratory_Medicine</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case01_MMMU_Pro_668.jpg" alt="case 1"></div>
+    <div>
+      <h3>Question</h3><div class="q">The etiology of seizures in this 15 month old girl is due to which of the following &lt;image 1&gt;<br>A. Neuronal migration defect<br>B. Neurodegenerative disease<br>C. Metabolic disorders<br>D. Genetic or chromosomal abnormalities<br>E. Meningitis<br>F. Neural tube closure defect<br>G. Hydrocephalus<br>H. Neoplasm<br>I. Perinatal hypoxic/ischemic event<br>J. Head injury</div>
+      <h3>Model reasoning</h3><div class="r">Based on the image provided, the most likely etiology for seizures in this 15-month-old girl is:<br><br>**A. Neuronal migration defect**<br><br>**Reasoning:**<br><br>1.  **Analysis of the Image:** The image shows a histological section of a brain. The most prominent feature is the presence of a large, irregular, and densely cellular mass. This mass is characteristic of a **neoplasia**, which is a tumor. The surrounding brain tissue appears to be infiltrated by this mass.<br><br>2.  **Context of the Question:** The question asks for the etiology of seizures in a 15-month-old girl. The image depicts a brain tumor.<br><br>3.  **Matching the Options:**<br>    *   **A. Neuronal migration defect:** This is a type of brain malformation (e.g., lissencephaly) that occurs during brain development. While it can cause seizures, it is not characterized by a discrete, cellular mass like the one shown in the image.<br>    *   **B. Neurodegenerative disease:** This describes a progressive loss of brain function over time (e.g., Alzheimer&#x27;s disease). It does not involve a discrete tumor.<br>    *   **C. Metabolic disorders:** These are caused by defects in the body&#x27;s metabolic processes (e.g., phenylketonuria). They do not present as a visible mass.<br>    *   **D. Genetic or chromosomal abnormalities:** This is a broad category that includes many conditions, but it is not a specific cause of seizures.<br>    *   **E. Meningitis:** This is an inflammation of the protective membranes covering the brain and spinal cord. It does not form a solid mass.<br>    *   **F. Neural tube closure defect:** These are structural defects of the brain and spinal cord during development (e.g., spina bifida). They do not form a discrete tumor.<br>    *   **G. Hydrocephalus:** This is the accumulation of cerebrospinal fluid in the brain&#x27;s ventricles, causing enlargement. It does not involve a tumor.<br>    *   **H. Neoplasm:** This is the correct answer. The image clearly shows a discrete, cellular mass within the brain, which is the definition of a neoplasm (tumor).<br>    *   **I. Perinatal hypoxic/ischemic event:** This refers to brain damage caused by a lack of oxygen or blood flow during birth. While it can cause seizures, it does not present as a discrete mass.<br>    *   **J. Head injury:** This is a cause of seizures but does not involve a visible tumor.<br><br>Therefore, the correct answer is **H. Neoplasm**.</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#2 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Physics</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case02_MMMU_Pro_1021.jpg" alt="case 2"></div>
+    <div>
+      <h3>Question</h3><div class="q">&lt;image 1&gt;A light ray enters a block of plastic and travels along the path shown.By considering the behavior of the ray at point P, determine the speed of light in the plastic.(10^8m/s)<br>A. 2.89<br>B. 2.01<br>C. 0.44<br>D. 1.13<br>E. 1.68<br>F. 3.14<br>G. 2.26<br>H. 0.88<br>I. 1.78<br>J. 1.36</div>
+      <h3>Model reasoning</h3><div class="r">To find the speed of light in the plastic, we can use the principle of refraction and the geometry of the situation.<br><br>1. **Determine the angle of incidence ($\theta_i$):**<br>   The light ray enters the plastic at a $53^\circ$ angle with the normal.<br>   $$\theta_i = 53^\circ$$<br><br>2. **Determine the angle of refraction ($\theta_r$):**<br>   The light ray exits the plastic at a $37^\circ$ angle with the normal.<br>   $$\theta_r = 37^\circ$$<br><br>3. **Apply Snell&#x27;s Law:**<br>   Snell&#x27;s Law states that $n_1 \sin(\theta_i) = n_2 \sin(\theta_r)$.<br>   Here, $n_1 = 1$ (air) and $n_2$ is the refractive index of the plastic.<br>   $$n_2 = \frac{\sin(\theta_i)}{\sin(\theta_r)} = \frac{\sin(53^\circ)}{\sin(37^\circ)}$$<br><br>4. **Calculate the refractive index ($n_2$):**<br>   Using the values $\sin(53^\circ) \approx 0.8$ and $\sin(37^\circ) \approx 0.6$:<br>   $$n_2 = \frac{0.8}{0.6} \approx 1.33$$<br><br>5. **Calculate the speed of light in the plastic ($v$):**<br>   The speed of light in a medium is given by $v = \frac{c}{n}$, where $c = 3 \times 10^8$ m/s.<br>   $$v = \frac{3 \times 10^8}{1.33} \approx 2.26 \times 10^8 \text{ m/s}$$<br><br>Therefore, the speed of light in the plastic is approximately $2.26 \times 10^8$ m/s.<br><br>The correct option is **G**.</div>
+      <p class="ans"><b>Model answer:</b> G
+         &nbsp;|&nbsp; <b>Ground truth:</b> G
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#3 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Math</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case03_MMMU_Pro_244.jpg" alt="case 3"></div>
+    <div>
+      <h3>Question</h3><div class="q">In circle $O$ shown below, diameter $\overline{D B}$ is perpendicular to chord $\overline{A C}$ at $E$.&lt;image 1&gt;If $D B=34, A C=30$, and $D E&gt;B E$, what is the length of $\overline{B E}$ ?<br>A. 14<br>B. 8<br>C. 25<br>D. 7<br>E. 12<br>F. 10<br>G. 15<br>H. 11<br>I. 16<br>J. 9</div>
+      <h3>Model reasoning</h3><div class="r">To find the length of $\overline{BE}$, we can use the properties of the circle and the given information:<br><br>1. **Identify the radius:**<br>   Since $DB$ is the diameter, the radius $r$ is half of the diameter:<br>   $$r = \frac{DB}{2} = \frac{34}{2} = 17$$<br><br>2. **Use the perpendicular chord theorem:**<br>   The diameter $DB$ is perpendicular to the chord $AC$ at point $E$. This means that $DB$ bisects the chord $AC$:<br>   $$AE = EC = \frac{AC}{2} = \frac{30}{2} = 15$$<br><br>3. **Apply the Pythagorean theorem:**<br>   In the right-angled triangle $\triangle AEO$, we have:<br>   $$AO^2 = AE^2 + OE^2$$<br>   $$17^2 = 15^2 + OE^2$$<br>   $$289 = 225 + OE^2$$<br>   $$OE^2 = 64$$<br>   $$OE = 8$$<br><br>4. **Find the length of $\overline{BE}$:**<br>   Since $O$ is the center of the circle and $E$ lies on the diameter $DB$, the length $BE$ is the difference between the radius and the segment $OE$:<br>   $$BE = BO - OE = 17 - 8 = 9$$<br><br>Therefore, the length of $\overline{BE}$ is **9**.<br><br>The correct option is **J**.</div>
+      <p class="ans"><b>Model answer:</b> J
+         &nbsp;|&nbsp; <b>Ground truth:</b> J
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#4 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Medium</span>
+      <span class="tag">Art &amp; Design</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case04_MMMU_1571.jpg" alt="case 4"></div>
+    <div>
+      <h3>Question</h3><div class="q">Who created &lt;image 1&gt;?<br>A. PAUL CÉZANNE<br>B. EDVARD MUNCH<br>C. EDGAR DEGAS<br>D. ANDY WARHOL</div>
+      <h3>Model reasoning</h3><div class="r">To determine who created the image, we analyze the visual style and artistic context:  <br><br>1. **Paul Cézanne (Option A)**: Cézanne was a key figure in Post-Impressionism, known for his use of bold colors, thick brushstrokes, and structured forms. The image’s vibrant, textured application of color and complex composition align with Cézanne’s style.  <br>2. **Edvard Munch (Option B)**: Munch is associated with Expressionism, characterized by exaggerated, distorted lines and emotional intensity. The image lacks Munch’s signature bold, expressive style.  <br>3. **Edgar Degas (Option C)**: Degas was an Impressionist focused on movement and modern life, often using softer, more fluid brushwork. The image’s dense, layered composition and vivid color do not match Degas’ style.  <br>4. **Andy Warhol (Option D)**: Warhol was a Pop Art pioneer, known for bold, graphic repetition and commercial imagery. The image does not reflect Warhol’s Pop Art aesthetic.  <br><br>Thus, the image corresponds to Paul Cézanne.  <br><br>Answer: \boxed{A}</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#5 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Tech &amp; Engineering</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case05_MMMU_1319.jpg" alt="case 5"></div>
+    <div>
+      <h3>Question</h3><div class="q">A, B and C are three visible stations in a hydrographic survey. The computed sides of the triangle ABC are AB = 1200 m, BC = 1442 m and CA = 1960 m. A station O is established outside the triangle and its position is to be determined by resection on A, B and C, the angle AOB and BOC being respectively 45°30&#x27; and 52°15&#x27;. Determine distances of OA and OC, if O and Bare on the opposite sides of line AC.&lt;image 1&gt;<br>A. AO = 884.49 m,CO = 1644 m<br>B. AO = 884.49 m,CO = 1624 m<br>C. AO = 885.49 m,CO = 1634 m<br>D. AO = 884.49 m,CO = 1634 m</div>
+      <h3>Model reasoning</h3><div class="r">To solve the problem, we start by determining the measure of angle \( \angle AOC \). Since \( O \) is on the opposite side of line \( AC \), \( \angle AOC = \angle AOB + \angle BOC \).  <br><br>Given:  <br>\( \angle AOB = 45^\circ 30&#x27; = 45.5^\circ \)  <br>\( \angle BOC = 52^\circ 15&#x27; = 52.25^\circ \)  <br><br>Thus:  <br>\( \angle AOC = 45.5^\circ + 52.25^\circ = 97.75^\circ \)  <br><br><br>Next, we use the **Law of Cosines** in \( \triangle AOC \) to relate \( OA \) and \( OC \). Let \( OA = x \) and \( OC = y \). The Law of Cosines states:  <br>\[ AC^2 = OA^2 + OC^2 - 2 \cdot OA \cdot OC \cdot \cos(\angle AOC) \]  <br><br>Substituting \( AC = 1960 \, \text{m} \) and \( \angle AOC = 97.75^\circ \):  <br>\[ 1960^2 = x^2 + y^2 - 2xy \cos(97.75^\circ) \]  <br><br><br>To solve for \( x \) and \( y \), we use the **Law of Sines** in \( \triangle AOB \) and \( \triangle BOC \). Let \( \angle ABO = \alpha \), \( \angle OAB = \beta \), \( \angle BCO = \gamma \), and \( \angle OBC = \delta \).  <br><br>From \( \triangle AOB \):  <br>\[ \frac{AB}{\sin(\angle AOB)} = \frac{OA}{\sin(\alpha)} \implies \frac{1200}{\sin(45.5^\circ)} = \frac{x}{\sin(\alpha)} \implies x = \frac{1200 \cdot \sin(\alpha)}{\sin(45.5^\circ)} \]  <br><br>From \( \triangle BOC \):  <br>\[ \frac{BC}{\sin(\angle BOC)} = \frac{OC}{\sin(\gamma)} \implies \frac{1442}{\sin(52.25^\circ)} = \frac{y}{\sin(\gamma)} \implies y = \frac{1442 \cdot \sin(\gamma)}{\sin(52.25^\circ)} \]  <br><br><br>In \( \triangle AOC \), \( \alpha + \gamma + \delta = 180^\circ \), so \( \alpha + \gamma = 180^\circ - 97.75^\circ = 82.25^\circ \).  <br><br><br>Substituting \( x \) and \( y \) into the Law of Cosines equation and solving numerically (or using iterative methods), we find:  <br>\( x \approx 884.49 \, \text{m} \) and \( y \approx 1634 \, \text{m} \)  <br><br><br>Thus, the distances are \( OA = 884.49 \, \text{m} \) and \( OC = 1634 \, \text{m} \).  <br><br><br>Answer: \boxed{D}</div>
+      <p class="ans"><b>Model answer:</b> D
+         &nbsp;|&nbsp; <b>Ground truth:</b> D
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#6 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Tech &amp; Engineering</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case06_MMMU_720.jpg" alt="case 6"></div>
+    <div>
+      <h3>Question</h3><div class="q">&lt;image 1&gt; While the term &quot;natural enemies&quot; is often used to refer to insects that can decrease the population of pests, what about diseases that affect weeds? How should one handle weeds that have been infected by diseases?<br>A. Don&#x27;t know and don&#x27;t want to guess<br>B. Leave all the weeds so that the disease can spread to healthy weeds<br>C. Remove all weeds as they will impact on yield<br>D. The removal of the weed depends on the potential for the disease to spread to the crop<br>E. Leave the infected weeds so that the disease could spread</div>
+      <h3>Model reasoning</h3><div class="r">To determine the correct answer, we analyze the options in the context of agricultural management for disease - affected weeds:  <br><br>1. **Option A (“Don&#x27;t know and don&#x27;t want to guess”)**: This is not a practical or responsible approach to crop management. Ignoring the issue would lead to worsening crop health, so this option is invalid.  <br>2. **Option B (“Leave all the weeds so that the disease can spread to healthy weeds”)**: Allowing disease to spread would harm the crop, which contradicts the goal of maintaining crop yield. Thus, this is incorrect.  <br>3. **Option C (“Remove all weeds as they will impact on yield”)**: Disease - affected weeds can reduce crop growth and yield. Removing them is a standard practice to protect crop productivity. This aligns with agricultural principles.  <br>4. **Option D (“The removal of the weed depends on the potential for the disease to spread to the crop”)**: While considering disease spread is important, the core action is to remove the weed to protect the crop. This option is less direct than C.  <br>5. **Option E (“Leave the infected weeds so that the disease could spread”)**: Similar to Option B, this would harm the crop, so it is incorrect.  <br><br>Answer: \boxed{C}</div>
+      <p class="ans"><b>Model answer:</b> C
+         &nbsp;|&nbsp; <b>Ground truth:</b> C
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#7 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Art &amp; Design</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case07_MMMU_4391.jpg" alt="case 7"></div>
+    <div>
+      <h3>Question</h3><div class="q">&lt;image 1&gt; is a symbol of...<br>A. Time waits for no man<br>B. A common experience<br>C. A mystery<br>D. A clock</div>
+      <h3>Model reasoning</h3><div class="r">To determine the answer, we analyze the image and the options:  <br><br>1. **Image analysis**: The image features a figure holding a **glass sandglass**. A sandglass is a universal symbol of time, representing the passage of time and its unstoppable nature.  <br>2. **Option evaluation**:  <br>   - **A. Time waits for no man**: This phrase aligns with the symbolism of a sandglass, as it conveys the idea that time moves forward without delay.  <br>   - **B. A common experience**: A sandglass does not symbolize shared experiences.  <br>   - **C. A mystery**: A sandglass is not associated with mystery.  <br>   - **D. A clock**: While a sandglass and a clock both measure time, the image specifically shows a sandglass, not a clock.  <br><br>Answer: \boxed{A}</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#8 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Medium</span>
+      <span class="tag">Math</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case08_MMMU_Pro_665.jpg" alt="case 8"></div>
+    <div>
+      <h3>Question</h3><div class="q">Two runners A and B start at the origin and run along the positive AT-axis, with B running 3 times as fast as A. An observer, standing one unit above the origin, keeps A and B in view. What is the maximum angle of sight $\theta $ between the observer&#x27;s view of A and B? (See Fig. 16-24.)&lt;image 1&gt;<br>A. 60°<br>B. 40°<br>C. 20°<br>D. 55°<br>E. 35°<br>F. 25°<br>G. 30°<br>H. 50°<br>I. 15°<br>J. 45°</div>
+      <h3>Model reasoning</h3><div class="r">To find the maximum angle of sight $\theta$ between the observer&#x27;s view of runners A and B, we can use trigonometry.<br><br>1. **Define the positions:**<br>   - Let the position of runner A at time $t$ be $x_A = vt$.<br>   - Let the position of runner B at time $t$ be $x_B = 3vt$.<br><br>2. **Calculate the angles:**<br>   - The angle of sight to runner A is $\alpha_A = \arctan\left(\frac{1}{x_A}\right) = \arctan\left(\frac{1}{vt}\right)$.<br>   - The angle of sight to runner B is $\alpha_B = \arctan\left(\frac{1}{x_B}\right) = \arctan\left(\frac{1}{3vt}\right)$.<br><br>3. **Find the angle of sight $\theta$:**<br>   - The angle of sight $\theta$ is the difference between the two angles:<br>     $$\theta = \alpha_A - \alpha_B = \arctan\left(\frac{1}{vt}\right) - \arctan\left(\frac{1}{3vt}\right)$$<br><br>4. **Simplify the expression:**<br>   - Using the tangent subtraction formula:<br>     $$\tan(\theta) = \frac{\frac{1}{vt} - \frac{1}{3vt}}{1 + \frac{1}{vt} \cdot \frac{1}{3vt}} = \frac{\frac{2}{3vt}}{1 + \frac{1}{3v^2t^2}} = \frac{2}{3vt} \cdot \frac{3v^2t^2}{3v^2t^2 + 1} = \frac{2vt}{3v^2t^2 + 1}$$<br><br>5. **Maximize $\theta$:**<br>   - To find the maximum value of $\theta$, we need to maximize $\tan(\theta)$.<br>   - Let $u = vt$. Then $\tan(\theta) = \frac{2u}{3u^2 + 1}$.<br>   - Take the derivative with respect to $u$ and set it to zero:<br>     $$\frac{d}{du}\left(\frac{2u}{3u^2 + 1}\right) = \frac{2(3u^2 + 1) - 2u(6u)}{(3u^2 + 1)^2} = \frac{2 - 6u^2}{(3u^2 + 1)^2} = 0$$<br>   - Solve for $u$:<br>     $$2 - 6u^2 = 0 \implies u^2 = \frac{1}{3} \implies u = \frac{1}{\sqrt{3}}$$<br><br>6. **Calculate the maximum $\tan(\theta)$:**<br>   - Substitute $u = \frac{1}{\sqrt{3}}$ back into the expression for $\tan(\theta)$:<br>     $$\tan(\theta) = \frac{2 \cdot \frac{1}{\sqrt{3}}}{3 \cdot \left(\frac{1}{\sqrt{3}}\right)^2 + 1} = \frac{\frac{2}{\sqrt{3}}}{3 \cdot \frac{1}{3} + 1} = \frac{\frac{2}{\sqrt{3}}}{1 + 1} = \frac{\frac{2}{\sqrt{3}}}{2} = \frac{1}{\sqrt{3}}$$<br><br>7. **Find $\theta$:**<br>   - $\theta = \arctan\left(\frac{1}{\sqrt{3}}\right) = 30^\circ$<br><br>Therefore, the maximum angle of sight $\theta$ is $30^\circ$.<br><br>The correct option is **G**.</div>
+      <p class="ans"><b>Model answer:</b> G
+         &nbsp;|&nbsp; <b>Ground truth:</b> G
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#9 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Electronics</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case09_MMMU_Pro_1391.jpg" alt="case 9"></div>
+    <div>
+      <h3>Question</h3><div class="q">Find the current i(t) in the circuit of &lt;image 1&gt; below for the input shown.<br>A. [(V_m / 4) {t cos t + cos t}] u(t).<br>B. [(V_m / 1) {t sin t + cost t}] u(t).<br>C. [(V_m / 2) {t sin t + sin t}] u(t).<br>D. [(V_m / 1) {t cos t + cos t}] u(t).<br>E. [(V_m / 4) {t sin t + cos t}] u(t).<br>F. [(V_m / 2) {t cos t + sin t}] u(t)<br>G. [(V_m / 2) {t sin t + cos t}] u(t).<br>H. [(V_m / 3) {t sin t + cost t}] u(t).<br>I. [(V_m / 3) {t cos t + sin t}] u(t).<br>J. [(V_m / 1) {t cos t + sin t}] u(t).</div>
+      <h3>Model reasoning</h3><div class="r">To find the current $i(t)$ in the circuit, we analyze the circuit using the Laplace transform method.<br><br>1. **Determine the Impedance of the Components:**<br>   * **Resistor (R):** $Z_R = R = 1\Omega$.<br>   * **Inductor (L):** $Z_L = sL = s$.<br>   * **Capacitor (C):** $Z_C = \frac{1}{sC} = \frac{1}{s(2)} = \frac{1}{2s}$.<br><br>2. **Analyze the Circuit for $t &lt; 0$:**<br>   * For $t &lt; 0$, the inductor and capacitor are in their initial steady-state values ($V_L = 0$ and $V_C = 0$).<br>   * The circuit reduces to a simple RC circuit with a voltage source $V_{in}(t) = V_m \sin(\omega t)$.<br>   * The voltage across the capacitor $V_C(t)$ is given by:<br>     $$V_C(t) = \frac{V_{in}(t)}{1 + sRC} = \frac{V_m \sin(\omega t)}{1 + s(1/2)} = \frac{2V_m \sin(\omega t)}{2 + s}$$<br>   * The current through the capacitor is:<br>     $$i_C(t) = \frac{dV_C}{dt} = \frac{2V_m \omega \cos(\omega t)}{2 + s}$$<br>   * The current through the inductor is:<br>     $$i_L(t) = \frac{V_L(t)}{s} = \frac{V_m \sin(\omega t)}{s}$$<br>   * The total current $i(t)$ is the sum of the currents through the inductor and capacitor:<br>     $$i(t) = i_L(t) + i_C(t) = \frac{V_m \sin(\omega t)}{s} + \frac{2V_m \omega \cos(\omega t)}{2 + s}$$<br><br>3. **Apply the Laplace Transform:**<br>   * Taking the Laplace transform of both sides, we get:<br>     $$I(s) = \frac{V_m}{s} \cdot \frac{\omega}{s^2 + \omega^2} + \frac{2V_m \omega}{2 + s} \cdot \frac{s}{s^2 + \omega^2}$$<br>   * Substituting $\omega = 2$:<br>     $$I(s) = \frac{2V_m}{s(s^2 + 4)} + \frac{4V_m s}{(s + 2)(s^2 + 4)}$$<br>   * Combining the terms:<br>     $$I(s) = \frac{2V_m(s + 2) + 4V_m s}{s(s + 2)(s^2 + 4)} = \frac{2V_m(3s + 2)}{s(s + 2)(s^2 + 4)}$$<br><br>4. **Partial Fraction Decomposition:**<br>   * Decomposing $I(s)$:<br>     $$I(s) = \frac{A}{s} + \frac{B}{s + 2} + \frac{Cs + D}{s^2 + 4}$$<br>   * Solving for the constants, we find:<br>     $$A = \frac{V_m}{2}, \quad B = -\frac{V_m}{2}, \quad C = \frac{V_m}{2}, \quad D = 0$$<br>   * Therefore:<br>     $$I(s) = \frac{V_m}{2} \cdot \frac{1}{s} - \frac{V_m}{2} \cdot \frac{1}{s + 2} + \frac{V_m}{2} \cdot \frac{s}{s^2 + 4}$$<br><br>5. **Inverse Laplace Transform:**<br>   * Taking the inverse Laplace transform:<br>     $$i(t) = \frac{V_m}{2} u(t) - \frac{V_m}{2} e^{-2t} u(t) + \frac{V_m}{2} \cos(2t) u(t)$$<br>   * Simplifying:<br>     $$i(t) = \frac{V_m}{2} \left(1 - e^{-2t} + \cos(2t)\right) u(t)$$<br><br>6. **Comparing with the Options:**<br>   * The correct option is **F**:<br>     $$i(t) = \frac{V_m}{2} \left(t \cos t + \sin t\right) u(t)$$<br><br>F</div>
+      <p class="ans"><b>Model answer:</b> F
+         &nbsp;|&nbsp; <b>Ground truth:</b> F
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#10 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Medium</span>
+      <span class="tag">Math</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case10_MMMU_Pro_1643.jpg" alt="case 10"></div>
+    <div>
+      <h3>Question</h3><div class="q">n $\triangle ABC$, $AB = 6$, $BC = 7$, and $CA = 8$. Point $D$ lies on $\overline{BC}$, and $\overline{AD}$ bisects $\angle BAC$. Point $E$ lies on $\overline{AC}$, and $\overline{BE}$ bisects $\angle ABC$. The bisectors intersect at $F$. What is the ratio $AF$ : $FD$?&lt;image 1&gt;<br>A. 5:4<br>B. 8:3<br>C. 2:1<br>D. 6:5<br>E. 5:3<br>F. 5:2<br>G. 4:3<br>H. 7:3<br>I. 3:2<br>J. 1:1</div>
+      <h3>Model reasoning</h3><div class="r">To find the ratio $AF : FD$, we can use the Angle Bisector Theorem and the properties of the incenter of a triangle.<br><br>1. **Identify the Incenter:**<br>   The incenter $F$ is the intersection of the angle bisectors of $\triangle ABC$.<br><br>2. **Apply the Angle Bisector Theorem:**<br>   The Angle Bisector Theorem states that the angle bisector of an angle in a triangle divides the opposite side into segments proportional to the adjacent sides.<br>   - For angle bisector $AD$ bisecting $\angle BAC$:<br>     $$\frac{BD}{DC} = \frac{AB}{AC} = \frac{6}{8} = \frac{3}{4}$$<br>   - For angle bisector $BE$ bisecting $\angle ABC$:<br>     $$\frac{AE}{EC} = \frac{AB}{BC} = \frac{6}{7}$$<br><br>3. **Use the Incenter Property:**<br>   The incenter $F$ divides each angle bisector in the ratio of the sum of the other two sides to the opposite side.<br>   - For angle bisector $AD$:<br>     $$\frac{AF}{FD} = \frac{AB + AC}{BC} = \frac{6 + 8}{7} = \frac{14}{7} = 2$$<br>   - For angle bisector $BE$:<br>     $$\frac{BF}{FE} = \frac{AB + BC}{AC} = \frac{6 + 7}{8} = \frac{13}{8}$$<br><br>4. **Determine the Ratio:**<br>   The ratio $AF : FD$ is $2 : 1$.<br><br>Therefore, the correct option is **C**.</div>
+      <p class="ans"><b>Model answer:</b> C
+         &nbsp;|&nbsp; <b>Ground truth:</b> C
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#11 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Health &amp; Medicine</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case11_MMMU_4596.jpg" alt="case 11"></div>
+    <div>
+      <h3>Question</h3><div class="q">This lesion: &lt;image 1&gt;<br>A. can be seen in a patient with acromegaly<br>B. can be found incidentally<br>C. may require the use of a reticulin stain to differentiate from normal gland<br>D. can present as a non-functioning tumor with mass effect<br>E. all are correct</div>
+      <h3>Model reasoning</h3><div class="r">To determine the correct answer, we analyze each option in the context of a pituitary lesion (likely a pituitary adenoma):  <br><br>1. **Option A**: Acromegaly is caused by excess growth hormone (GH) production, and GH-secreting pituitary adenomas are a common cause of acromegaly. Thus, a pituitary lesion *can* be seen in a patient with acromegaly. **Correct**.  <br><br>2. **Option B**: Pituitary adenomas are often incidental findings during imaging (e.g., MRI, CT) for unrelated reasons. Thus, a pituitary lesion *can* be found incidentally. **Correct**.  <br><br>3. **Option C**: Reticulin staining is used to distinguish normal glandular tissue from abnormal lesions. For example, pituitary adenomas may show distinct reticulin staining patterns compared to normal pituitary tissue. Thus, a pituitary lesion *may* require a reticulin stain to differentiate from normal gland. **Correct**.  <br><br>4. **Option D**: Non - functional pituitary adenomas can cause mass effect (e.g., compression of surrounding structures like the optic chiasm or pituitary gland). Thus, a pituitary lesion *can* present as a non - functional tumor with mass effect. **Correct**.  <br><br>Since all options (A, B, C, D) are correct, the answer is E.  <br><br>Answer: \boxed{E}</div>
+      <p class="ans"><b>Model answer:</b> E
+         &nbsp;|&nbsp; <b>Ground truth:</b> E
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#12 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Market Research</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case12_MMMU_7581.jpg" alt="case 12"></div>
+    <div>
+      <h3>Question</h3><div class="q">&lt;image 1&gt; Ten individuals went on a low-fat diet for 12 weeks to lower their cholesterol. The data are recorded in Table 10.20. At the 5% significance level, do you think that their cholesterol levels were significantly lowered?<br>A. there is insufficient evidence to conclude that the medication lowered cholesterol levels after 12 weeks<br>B. there is sufficient evidence to conclude that the medication lowered cholesterol levels after 12 weeks<br>C. not certain</div>
+      <h3>Model reasoning</h3><div class="r">To determine if there is sufficient evidence to conclude that cholesterol levels were significantly lowered after 12 weeks, we use a **paired t - test** (since the data is paired: before and after cholesterol levels for the same individuals).  <br><br><br>### Step 1: Define Hypotheses  <br>- Null hypothesis (\(H_0\)): The mean change in cholesterol levels is 0 (\(\mu_d = 0\)).  <br>- Alternative hypothesis (\(H_1\)): The mean change in cholesterol levels is less than 0 (\(\mu_d &lt; 0\), since we are looking for a decrease).  <br><br><br>### Step 2: Calculate Differences  <br>For each individual, compute the difference (\(d_i = \text{Before} - \text{After}\)):  <br>1. \(140 - 140 = 0\)  <br>2. \(220 - 220 = 0\)  <br>3. \(110 - 120 = -10\)  <br>4. \(240 - 220 = 20\)  <br>5. \(200 - 190 = 10\)  <br>6. \(180 - 150 = 30\)  <br>7. \(190 - 200 = -10\)  <br>8. \(360 - 300 = 60\)  <br>9. \(280 - 300 = -20\)  <br>10. \(260 - 240 = 20\)  <br><br><br>### Step 3: Calculate Mean and Standard Deviation of Differences  <br>- **Mean of differences (\(\bar{d}\))**:  <br>  \[<br>  \bar{d} = \frac{\sum d_i}{n} = \frac{0 + 0 + (-10) + 20 + 10 + 30 + (-10) + 60 + (-20) + 20}{10} = \frac{100}{10} = 10<br>  \]  <br><br>- **Standard deviation of differences (\(s\))**:  <br>  First, find squared differences from the mean:  <br>  \((0 - 10)^2 = 100\), \((0 - 10)^2 = 100\), \((-10 - 10)^2 = 400\), \((20 - 10)^2 = 100\), \((10 - 10)^2 = 0\), \((30 - 10)^2 = 400\), \((-10 - 10)^2 = 400\), \((60 - 10)^2 = 2500\), \((-20 - 10)^2 = 900\), \((20 - 10)^2 = 100\)  <br>  Sum of squared differences: \(100 + 100 + 400 + 100 + 0 + 400 + 400 + 2500 + 900 + 100 = 4400\)  <br>  Variance (\(s^2\)): \(\frac{4400}{n - 1} = \frac{4400}{9} \approx 488.89\)  <br>  Standard deviation (\(s\)): \(\sqrt{488.89} \approx 22.11\)  <br><br><br>### Step 4: Calculate t - Statistic  <br>The formula for the t - statistic in a paired t - test is:  <br>\[<br>t = \frac{\bar{d} - \mu_d}{s / \sqrt{n}}<br>\]  <br>Substitute \(\bar{d} = 10\), \(\mu_d = 0\), \(s \approx 22.11\), and \(n = 10\):  <br>\[<br>t = \frac{10 - 0}{22.11 / \sqrt{10}} \approx \frac{10}{22.11 / 3.162} \approx \frac{10}{7.00} \approx 1.43<br>\]  <br><br><br>### Step 5: Determine Critical Value and p - Value  <br>- **Degrees of freedom (\(df\))**: \(n - 1 = 10 - 1 = 9\)  <br>- **Critical t - value** for a one - tail test with \(\alpha = 0.05\) and \(df = 9\): From a t - table, the critical value is approximately \(-1.833\).  <br>- **p - value** for a one - tail test with \(\alpha = 0.05\) and \(df = 9\): From a t - table, the p - value is approximately \(0.071\).  <br><br><br>### Step 6: Make a Decision  <br>- Compare the calculated t - statistic (\(t \approx 1.43\)) to the critical value (\(-1.833\)). Since \(1.43 &gt; -1.833\), we **fail to reject \(H_0\)**.  <br>- Alternatively, compare the p - value (\(0.071\)) to \(\alpha = 0.05\). Since \(0.071 &gt; 0.05\), we **fail to reject \(H_0\)**.  <br><br><br>Thus, there is insufficient evidence to conclude that cholesterol levels were significantly lowered after 12 weeks.  <br><br>Answer: \boxed{A}</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#13 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Tech &amp; Engineering</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case13_MMMU_1314.jpg" alt="case 13"></div>
+    <div>
+      <h3>Question</h3><div class="q">A survey line ABC crossing a river at right angles cut its banks at B and C, as shown in Fig. 2.39. To determine the width BC of the river, the following operation was carried out.A 60 m long line BE was set out roughly parallel to the river. Line CE was extended to D and mid-point F of DB was established. Then EF was extended to G such that FG = EF. Line DG was extended to cut the survey line ABC at H. GH and HB were measured and found to be 40 m and 80 m, respectively.Find the width of the river.&lt;image 1&gt;<br>A. 120 m<br>B. 122 m<br>C. 123 m<br>D. 121 m</div>
+      <h3>Model reasoning</h3><div class="r">To determine the width of the river \( BC \), we analyze the geometric relationships and similar triangles:  <br><br><br>### Step 1: Identify Similar Triangles  <br>Since \( BE \parallel BC \) (both are parallel to the river), \( \angle BHE = \angle BCD \) (corresponding angles) and \( \angle BHE = \angle BDC \) (vertical angles). Thus, \( \triangle BHE \sim \triangle BCD \) by **AA (Angle-Angle) Similarity**.  <br><br><br>### Step 2: Use the Ratio of Similar Triangles  <br>For similar triangles \( \triangle BHE \) and \( \triangle BCD \), the ratio of corresponding sides is equal:  <br>\[<br>\frac{BH}{BC} = \frac{BE}{BD}<br>\]  <br><br>We know:  <br>- \( BE = 60 \, \text{m} \) (given),  <br>- \( BH = 80 \, \text{m} \) (given),  <br>- \( GH = 40 \, \text{m} \) (given), so \( HD = 40 \, \text{m} \).  <br><br>Thus, \( BD = BH + HD = 80 + 40 = 120 \, \text{m} \).  <br><br><br>### Step 3: Solve for \( BC \)  <br>Substitute known values into the ratio:  <br>\[<br>\frac{80}{BC} = \frac{60}{120}<br>\]  <br><br>Simplify \( \frac{60}{120} = \frac{1}{2} \), so:  <br>\[<br>\frac{80}{BC} = \frac{1}{2} \implies BC = 80 \times 2 = 160 \, \text{m}<br>\]  <br><br><br>Wait, this result does not match the options. Re-evaluating, we recognize that \( EF \) is the midline of \( \triangle BDC \) (since \( F \) is the midpoint of \( DB \)), so \( EF = \frac{1}{2} BD \). Given \( FG = EF \), we have \( FG = \frac{1}{2} BD \).  <br><br>Thus, \( DG = EF + FG = \frac{1}{2} BD + \frac{1}{2} BD = BD \).  <br><br>Since \( GH = 40 \, \text{m} \) and \( HB = 80 \, \text{m} \), \( BD = BH + HD = 80 + 40 = 120 \, \text{m} \).  <br><br><br>### Step 4: Re-evaluate Similarity  <br>For \( \triangle BHE \sim \triangle BCD \), \( \frac{BH}{BC} = \frac{BE}{BD} \). Substituting \( BH = 80 \), \( BE = 60 \), and \( BD = 120 \):  <br>\[<br>\frac{80}{BC} = \frac{60}{120} \implies BC = 160<br>\]  <br><br>This discrepancy suggests a miscalculation. Rechecking the problem’s options and relationships, we realize the correct approach uses the midline and similar triangles. The correct calculation confirms \( BC = 120 \, \text{m} \), matching option **A**.  <br><br><br>Answer: \boxed{A}</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#14 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Surveying and Mapping</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case14_MMMU_1314.jpg" alt="case 14"></div>
+    <div>
+      <h3>Question</h3><div class="q">A survey line ABC crossing a river at right angles cut its banks at B and C, as shown in Fig. 2.39. To determine the width BC of the river, the following operation was carried out.A 60 m long line BE was set out roughly parallel to the river. Line CE was extended to D and mid-point F of DB was established. Then EF was extended to G such that FG = EF. Line DG was extended to cut the survey line ABC at H. GH and HB were measured and found to be 40 m and 80 m, respectively.Find the width of the river.&lt;image 1&gt;<br>A. 120 m<br>B. 122 m<br>C. 123 m<br>D. 121 m</div>
+      <h3>Model reasoning</h3><div class="r">To determine the width of the river \( BC \), we analyze the geometric relationships and similar triangles:  <br><br><br>### Step 1: Identify Similar Triangles  <br>Since \( BE \) is parallel to the river, \( BE \parallel BC \). Thus, \( \triangle BEF \sim \triangle BCD \) (by AA similarity, as \( \angle BEF = \angle BCD \) and \( \angle BFE = \angle BDC \)).  <br><br><br>### Step 2: Determine the Ratio of Similarity  <br>\( F \) is the midpoint of \( DB \), so \( BF = \frac{1}{2} BD \). The ratio of similarity between \( \triangle BEF \) and \( \triangle BCD \) is \( \frac{BF}{BD} = \frac{1}{2} \).  <br><br><br>### Step 3: Relate \( BE \) and \( BC \)  <br>For similar triangles, corresponding sides are proportional. Thus:  <br>\[<br>\frac{BE}{BC} = \frac{BF}{BD} = \frac{1}{2}<br>\]  <br>Given \( BE = 60 \, \text{m} \), substitute into the proportion:  <br>\[<br>\frac{60}{BC} = \frac{1}{2}<br>\]  <br>Solving for \( BC \):  <br>\[<br>BC = 60 \times 2 = 120 \, \text{m}<br>\]  <br><br><br>### Step 4: Verify Consistency with Other Measurements  <br>If \( BC = 120 \, \text{m} \), then \( HB = 80 \, \text{m} \) (given) and \( GH = 40 \, \text{m} \) (given). These values align with the geometric setup, confirming the solution.  <br><br><br>Thus, the width of the river \( BC \) is \( \boldsymbol{120 \, \text{m}} \).  <br><br>Answer: \boxed{A}</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#15 &nbsp;<span class="tag">MathVision</span>
+      <span class="tag">nan</span>
+      <span class="tag">statistics</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case15_MathVision_1814.jpg" alt="case 15"></div>
+    <div>
+      <h3>Question</h3><div class="q">Hint: Please answer the question and provide the final answer at the end.<br>Question: Andrew, the absent-minded mountain climber, climbed a mountain range, with a profile as shown in Figure 1 from point $P$ to point $Q$. From time to time he had to turn back to find bits of his equipment that he had dropped. The graph of the height $H$ of his position at time $t$ is shown in Figure 2 to the same scale as Figure 1. How many times did he turn back?</div>
+      <h3>Model reasoning</h3><div class="r">To determine how many times Andrew turned back, we analyze the **height - time graph (Figure 2)** and the **profile graph (Figure 1)**:  <br><br>1. **Interpret Figure 1 (height - time graph)**:  <br>   - A “turn back” means Andrew’s height decreases (i.e., he descends).  <br>   - In Figure 1, we count the number of times the height *decreases* (since turning back implies a descent).  <br><br>2. **Interpret Figure 2 (height - time graph)**:  <br>   - The vertical axis is height \( H \), and the horizontal axis is time \( t \).  <br>   - A “turn back” corresponds to a **decrease in height** (i.e., a downward segment in the height - time graph).  <br><br>3. **Count the descents**:  <br>   - In Figure 1, the height - time graph has 3 downward segments (each representing a turn back).  <br>   - In Figure 2, the height - time graph also has 3 downward segments (each representing a turn back).  <br><br>Thus, Andrew turned back 3 times.  <br><br>Answer: \boxed{3}</div>
+      <p class="ans"><b>Model answer:</b> 3
+         &nbsp;|&nbsp; <b>Ground truth:</b> 3
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#16 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Clinical_Medicine</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case16_MMMU_Pro_452.jpg" alt="case 16"></div>
+    <div>
+      <h3>Question</h3><div class="q">A 23-year-old G2 P1 woman has noted minimal fetal movement in the second trimester. An ultrasound scan at 19 weeks shows hydrops fetalis. A girl infant is born at 32 weeks gestation and is markedly icteric. The microscopic appearance of the placenta is shown here. Laboratory studies show the baby has a Hct of 18%, and an exchange transfusion is performed. Her first pregnancy was uncomplicated and resulted in the birth of a normal girl at term. Which of the following immunologic mechanisms is most likely to produce these findings? &lt;image 1&gt; <br>A. Anti-receptor antibody<br>B. Loss of self tolerance<br>C. Complement mediated cell destruction<br>D. Cell-mediated cytotoxicity<br>E. Activation of mast cells<br>F. Autoimmune disorder<br>G. Natural killer cell activation<br>H. Immune complex formation<br>I. Delayed type hypersensitivity<br>J. T-cell suppression</div>
+      <h3>Model reasoning</h3><div class="r">Based on the clinical presentation and the findings, the most likely immunologic mechanism is **Complement-mediated cell destruction**.<br><br>**Reasoning:**<br>1.  **Clinical Presentation:** The patient has a history of two previous pregnancies (G2 P1). The first pregnancy was uncomplicated, but the second pregnancy resulted in hydrops fetalis and an icteric newborn.<br>2.  **Pathophysiology:** The development of hydrops fetalis and an icteric newborn in a subsequent pregnancy is a hallmark of **Autoimmune Hemolytic Anemia (AIHA)**, specifically **Autoimmune Hemolytic Anemia of the Newborn (AIHNA)**.<br>3.  **Immunologic Mechanism:** In AIHNA, the mother&#x27;s immune system develops antibodies against the newborn&#x27;s red blood cells (RBCs). These antibodies are typically **IgG antibodies** that cross the placenta.<br>4.  **Mode of Action:** These maternal antibodies bind to the newborn&#x27;s RBCs. This binding activates the **complement system**.<br>5.  **Outcome:** The activated complement cascade leads to the destruction of the newborn&#x27;s red blood cells (hemolysisolysis). This process is known as **complement-mediated cell destruction**.<br><br>Therefore, the correct option is **C. Complement mediated cell destruction**.</div>
+      <p class="ans"><b>Model answer:</b> C
+         &nbsp;|&nbsp; <b>Ground truth:</b> C
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#17 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Clinical_Medicine</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case17_MMMU_Pro_97.jpg" alt="case 17"></div>
+    <div>
+      <h3>Question</h3><div class="q">This is a 57 year-old female. What is the most likely diagnosis? &lt;image 1&gt; <br>A. Ectopic pregnancy<br>B. Cervical cancer<br>C. Bladder calculi<br>D. Endometriosis<br>E. Ovarian cancer<br>F. Iliac artery aneurysms<br>G. Uterine fibroids<br>H. Ovarian cysts<br>I. Aortic aneurysm<br>J. Pelvic inflammatory disease</div>
+      <h3>Model reasoning</h3><div class="r">Based on the provided radiographic image, the most likely diagnosis is:<br><br>**G. Uterine fibroids**<br><br>**Reasoning:**<br>1.  **Imaging Technique:** The image is a **plain X-ray** (anterior-posterior or AP view) of the abdomen and pelvis.<br>2.  **Key Finding:** The most prominent feature is a large, dense, and irregularly shaped mass located in the **central pelvic region**, superior to the bladder.<br>3.  **Anatomical Location:** This mass is situated in the region of the **uterus** (which is not clearly visible on this AP view but is implied by the location relative to the bladder and the context of the question).<br>4.  **Morphology:** The mass has a heterogeneous, lobulated, and calcified appearance, which is characteristic of **uterine fibroids (leiomyomas)**. These are benign tumors of the smooth muscle cells of the uterus.<br>5.  **Exclusion of Other Options:**<br>    *   **A. Ectopic pregnancy:** Would appear as a smaller, more localized mass in the adnexa, not a central pelvic mass.<br>    *   **B. Cervical cancer:** Would be located in the cervix, not the central pelvis.<br>    *   **C. Bladder calculi:** Would be seen within the bladder, not as a mass.<br>    *   **D. Endometriosis:** Would appear as a diffuse, irregular mass in the pelvic cavity, not a discrete, central mass.<br>    *   **E. Ovarian cancer:** Would be located in the adnexa, not the central pelvis.<br>    *   **F. Iliac artery aneurysms:** Would appear as a large, rounded dilation in the abdominal aorta.<br>    *   **H. Ovarian cysts:** Would be located in the adnexa, not the central pelvis.<br>    *   **I. Aortic aneurysm:** Would be located in the abdomen, not the central pelvis.<br>    *   **J. Pelvic inflammatory disease:** Would appear as a diffuse, irregular mass in the pelvic cavity, not a discrete, central mass.</div>
+      <p class="ans"><b>Model answer:</b> G
+         &nbsp;|&nbsp; <b>Ground truth:</b> G
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#18 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Medium</span>
+      <span class="tag">Architecture_and_Engineering</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case18_MMMU_Pro_262.jpg" alt="case 18"></div>
+    <div>
+      <h3>Question</h3><div class="q">Determine the coordinates of a point R from the following data:Coordinates of P = E1200 m, N1200 m;Coordinates of Q = E400 m, N1000 m;Bearing of PR = 62°13&#x27;40&quot;;Bearing of QR = 38°46&#x27;25&quot;.Let the coordinates of R be (X, Y), and the bearings of PR and QR be $\alpha $ and $\beta$, respectively.&lt;image 1&gt;<br>A. X = 1508.08 m,Y = 1583.60 m<br>B. X = 1508.08 m,Y = 1583.54 m<br>C. X = 1508.12 m,Y = 1583.54 m<br>D. X = 1508.06 m,Y = 1583.54 m<br>E. X = 1508.08 m,Y = 1583.56 m<br>F. X = 1508.08 m,Y = 1583.52 m<br>G. X = 1508.08 m,Y = 1583.58 m<br>H. X = 1508.08 m,Y = 1583.50 m<br>I. X = 1508.10 m,Y = 1583.54 m</div>
+      <h3>Model reasoning</h3><div class="r">To determine the coordinates of point $R(X, Y)$, we can use the method of triangulation based on the given bearings and distances.<br><br>**1. Calculate the coordinates of point $P$:**<br><br>Given:<br>*   $P(1200, 1200)$<br><br>**2. Calculate the coordinates of point $Q$:**<br><br>Given:<br>*   $Q(400, 1000)$<br><br>**3. Calculate the coordinates of point $R$:**<br><br>We will use the Law of Sines in $\triangle PQR$ to find the distance $PR$ and then use the bearing of $PR$ to find the coordinates of $R$.<br><br>*   **Step 1: Calculate the distance $PQ$:**<br>    $$PQ = \sqrt{(1200-400)^2 + (1200-1000)^2} = \sqrt{800^2 + 200^2} = \sqrt{640000 + 40000} = \sqrt{680000} \approx 824.62 \text{ m}$$<br><br>*   **Step 2: Calculate the angle $\angle PQR$:**<br>    $$\tan(\angle PQR) = \frac{\text{Opposite}}{\text{Adjacent}} = \frac{200}{800} = 0.25$$<br>    $$\angle PQR = \arctan(0.25) \approx 14.03^\circ$$<br><br>*   **Step 3: Calculate the angle $\angle QPR$:**<br>    $$\tan(\angle QPR) = \frac{\text{Opposite}}{\text{Adjacent}} = \frac{200}{800} = 0.25$$<br>    $$\angle QPR = \arctan(0.25) \approx 14.03^\circ$$<br><br>*   **Step 4: Calculate the angle $\angle PRQ$:**<br>    $$\angle PRQ = 180^\circ - \angle PQR - \angle QPR = 180^\circ - 14.03^\circ - 14.03^\circ = 151.94^\circ$$<br><br>*   **Step 5: Calculate the distance $PR$ using the Law of Sines:**<br>    $$\frac{PR}{\sin(\angle PQR)} = \frac{PQ}{\sin(\angle PRQ)}$$<br>    $$PR = PQ \cdot \frac{\sin(\angle PQR)}{\sin(\angle PRQ)}$$<br>    $$PR = 824.62 \cdot \frac{\sin(14.03^\circ)}{\sin(151.94^\circ)}$$<br>    $$PR = 824.62 \cdot \frac{0.2434}{0.5907} \approx 308.08 \text{ m}$$<br><br>*   **Step 6: Calculate the coordinates of $R$:**<br>    *   **Step 6a: Calculate the bearing of $PR$:**<br>        The bearing of $PR$ is given as $62^\circ 13&#x27; 40&#x27;&#x27;$.<br>        Convert to decimal degrees:<br>        $$62^\circ 13&#x27; 40&#x27;&#x27; = 62 + \frac{13}{60} + \frac{40}{3600} \approx 62.2278^\circ$$<br><br>    *   **Step 6b: Calculate the coordinates of $R$:**<br>        Using the bearing of $PR$ and the distance $PR$:<br>        $$X = X_P + PR \cdot \cos(\alpha)$$<br>        $$Y = Y_P + PR \cdot \sin(\alpha)$$<br>        $$X = 1200 + 308.08 \cdot \cos(62.2278^\circ) \approx 1200 + 308.08 \cdot 0.4694 \approx 1508.08 \text{ m}$$<br>        $$Y = 1200 + 308.08 \cdot \sin(62.2278^\circ) \approx 1200 + 308.08 \cdot 0.8830 \approx 1583.54 \text{ m}$$<br><br>Therefore, the coordinates of point $R$ are approximately $(1508.08 \text{ m}, 1583.54 \text{ m})$.<br><br>The correct option is **B**.</div>
+      <p class="ans"><b>Model answer:</b> B
+         &nbsp;|&nbsp; <b>Ground truth:</b> B
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#19 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Medium</span>
+      <span class="tag">Art &amp; Design</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case19_MMMU_2030.jpg" alt="case 19"></div>
+    <div>
+      <h3>Question</h3><div class="q">Which work was most directly influenced by the painting? &lt;image 1&gt;<br>A. Rude&#x27;s La Marseillaise<br>B. Goya&#x27;s Third of May<br>C. Picasso&#x27;s Guernica<br>D. Johns&#x27;s Three Flags</div>
+      <h3>Model reasoning</h3><div class="r">To determine the answer, we analyze the painting and the options:  <br><br>1. **Identify the painting**: The image is *The Third of May 1808* by Francisco Goya, which depicts the execution of Spanish civilians during the Peninsular War.  <br><br>2. **Analyze each option**:  <br>   - **A. Rude’s *La Marseillaise***: This sculpture (1833) depicts the French Revolution’s storm of the Bastille. While the themes differ (French vs. Spanish revolution), *La Marseillaise* was directly influenced by Goya’s *The Third of May 1808*—both works focus on revolutionary violence and civilian suffering.  <br>   - **B. Goya’s *The Third of May 1808***: This is the painting itself, so it cannot be a work *influenced* by itself.  <br>   - **C. Picasso’s *Guernica***: This 1937 painting depicts the bombing of Guernica during the Spanish Civil War. While it shares themes of violence, its subject matter (Civil War vs. Peninsular War) and style (Cubism vs. Romanticism) are distinct.  <br>   - **D. Johns’s *Three Flags***: This 1959 work explores the symbolism of American flags. Its themes and context are unrelated to Goya’s painting.  <br><br>Thus, the work most directly influenced by Goya’s *The Third of May 1808* is Rude’s *La Marseillaise*.  <br><br>Answer: \boxed{A}</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#20 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Database</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case20_MMMU_4192.jpg" alt="case 20"></div>
+    <div>
+      <h3>Question</h3><div class="q">How many DEPTs can a COURSE be OFFERed by in the entity-relationship (ER) diagram in &lt;image 1&gt;?<br>A. 0<br>B. 1<br>C. 2<br>D. N<br>E. None of the other answers</div>
+      <h3>Model reasoning</h3><div class="r">To determine how many DEPTs a COURSE can be OFFERED by, we analyze the **entity-relationship (ER) diagram** by examining the relationship between *COURSE* and *DEPT*:  <br><br>1. Locate the relationship between *COURSE* and *DEPT*: In the ER diagram, the relationship between *COURSE* and *DEPT* is defined by the cardinality *DEPTS* (where the *DEPTS* entity connects *COURSE* to *DEPT*).  <br>2. Interpret the cardinality: The notation `(0,1)` for the *DEPTS* relationship means a *COURSE* can be OFFERED by **0 to 1 DEPT** (i.e., 0 or 1 DEPT).  <br><br>Thus, the number of DEPTs a COURSE can be OFFERED by is 0 or 1.  <br><br>Answer: \boxed{B}</div>
+      <p class="ans"><b>Model answer:</b> B
+         &nbsp;|&nbsp; <b>Ground truth:</b> B
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#21 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Clinical_Medicine</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case21_MMMU_Pro_97.jpg" alt="case 21"></div>
+    <div>
+      <h3>Question</h3><div class="q">This is a 57 year-old female. What is the most likely diagnosis? &lt;image 1&gt; <br>A. Ectopic pregnancy<br>B. Cervical cancer<br>C. Bladder calculi<br>D. Endometriosis<br>E. Ovarian cancer<br>F. Iliac artery aneurysms<br>G. Uterine fibroids<br>H. Ovarian cysts<br>I. Aortic aneurysm<br>J. Pelvic inflammatory disease</div>
+      <h3>Model reasoning</h3><div class="r">Based on the provided radiographic image, the most likely diagnosis is:<br><br>**G. Uterine fibroids**<br><br>**Reasoning:**<br><br>1.  **Image Type:** The image is a plain abdominal X-ray (anterior-posterior or AP view).<br>2.  **Key Finding:** The most prominent feature is a large, dense, and irregularly shaped mass located in the pelvic region, corresponding to the uterine area.<br>3.  **Location and Appearance:** The mass is situated in the midline of the pelvis, posterior to the bladder and anterior to the rectum. Its dense, calcified, and lobulated borders are characteristic of a uterine fibroid (leiomyoma).<br>4.  **Eliminating Other Options:**<br>    *   **A. Ectopic pregnancy:** Would appear as a small, round, calcified mass in the adnexa, not in the midline pelvis.<br>    *   **B. Cervical cancer:** Would not be visible on a plain abdominal X-ray.<br>    *   **C. Bladder calculi:** Would appear as small, round, calcified spots within the bladder, not in the pelvic mass.<br>    *   **D. Endometriosis:** Would not be visible on a plain abdominal X-ray.<br>    *   **E. Ovarian cancer:** Would not be visible on a plain abdominal X-ray.<br>    *   **F. Iliac artery aneurysms:** Would appear as a large, dilated vessel in the pelvis, not a solid mass.<br>    *   **H. Ovarian cysts:** Would appear as round, fluid-filled structures in the adnexa, not in the midline pelvis.<br>    *   **I. Aortic aneurysm:** Would appear as a large, dilated vessel in the abdomen, not a pelvic mass.<br>    *   **J. Pelvic inflammatory disease:** Would not be visible on a plain abdominal X-ray.</div>
+      <p class="ans"><b>Model answer:</b> G
+         &nbsp;|&nbsp; <b>Ground truth:</b> G
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#22 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Business</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case22_MMMU_7368.jpg" alt="case 22"></div>
+    <div>
+      <h3>Question</h3><div class="q">Table 8 shows sales figures, including total sales amount, in thousands of dollars, average number of daily sales, and average length of customer visits in minutes, over a three-month period from 20 stores in a retail chain. &lt;image 1&gt; Consider the following statement. Indicate whether the statement is true or false, based on the information provided in the table. Statement: The store that averaged the fewest sales in May had higher total dollar sales that month than the store that averaged the most sales in May.<br>A. True<br>B. False</div>
+      <h3>Model reasoning</h3><div class="r">To determine if the statement is true or false, we analyze the &quot;Total sales amount (in thousands dollars)&quot; column for May:  <br><br>1. **Identify the store with the fewest sales in May**:  <br>   Among all stores’ May sales, the smallest value is $408, corresponding to *Tuxedo*.  <br><br>2. **Identify the store with the most sales in May**:  <br>   Among all stores’ May sales, the largest value is $508, corresponding to *Greenville*.  <br><br>3. **Compare the two values**:  <br>   Tuxedo’s May sales ($408) are *not* higher than Greenville’s May sales ($508).  <br><br>Thus, the statement is false.  <br><br>Answer: \boxed{B}</div>
+      <p class="ans"><b>Model answer:</b> B
+         &nbsp;|&nbsp; <b>Ground truth:</b> B
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#23 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Clinical Pathology</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case23_MMMU_3768.jpg" alt="case 23"></div>
+    <div>
+      <h3>Question</h3><div class="q">A 53-year-old man suffers a cardiac arrest and his wife calls paramedics, who arrive a few minutes later and begin resuscitative measures. A regular heart rate is established after about 40 minutes of resuscitative efforts as he is being transported to the hospital. A thrombolytic agent is administered on admission. Which of the following cellular changes is most likely to now be occurring within his myocardium? &lt;image 1&gt; <br>A. Apoptosis<br>B. Free radical injury<br>C. Heterophagocytosis<br>D. Squamous metaplasia</div>
+      <h3>Model reasoning</h3><div class="r">To determine the most likely cellular change in the myocardium after cardiac arrest and thrombolytic agent administration, we analyze the context and options:  <br><br>1. **Context of thrombolytics**: Thrombolytic agents (e.g., tissue plasminogen activator, tPA) work to dissolve blood clots, restoring blood flow. However, they can generate **free radicals** during their action, leading to oxidative stress and tissue damage.  <br><br>2. **Evaluating options**:  <br>   - **A. Apoptosis**: Programmed cell death can occur in damaged tissue, but it is not the primary or most direct cellular change caused by thrombolytics.  <br>   - **B. Free radical injury**: Thrombolytics induce oxidative stress by producing free radicals, which directly damages myocardial cells. This is a well-documented effect of thrombolytics.  <br>   - **C. Heterophagocytosis**: This refers to macrophages engulfing dead cells, which is a secondary process in tissue repair, not the primary cellular change caused by thrombolytics.  <br>   - **D. Squamous metaplasia**: This is a pathological replacement of normal tissue with squamous cells, which is unrelated to thrombolytic action in this context.  <br><br>Thus, the most likely cellular change is free radical injury.  <br><br>Answer: \boxed{B}</div>
+      <p class="ans"><b>Model answer:</b> B
+         &nbsp;|&nbsp; <b>Ground truth:</b> B
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#24 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Medium</span>
+      <span class="tag">Mechanical_Engineering</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case24_MMMU_Pro_130.jpg" alt="case 24"></div>
+    <div>
+      <h3>Question</h3><div class="q">Magnetic tape is fed over and around the light pulleys mounted in a computer frame. If the speed vof the tape is constant and if the ratio of the magnitudes of the acceleration of points A and B is 2 /3, determine the radius r of the larger pulley.&lt;image 1&gt;<br>A. $r_{A}=9.5in$<br>B. $r_{A}=7.5in$<br>C. $r_{A}=6.5in$<br>D. $r_{A}=3.5in$<br>E. $r_{A}=10.5in$<br>F. $r_{A}=4.5in$<br>G. $r_{A}=8.5in$<br>H. $r_{A}=2.5in$<br>I. $r_{A}=5.5in$</div>
+      <h3>Model reasoning</h3><div class="r">To find the radius $r$ of the larger pulley, we can use the relationship between the linear speed $v$ of the tape and the tangential acceleration $a$ of a point on the pulley.<br><br>1. **Understand the relationship between linear speed and tangential acceleration:**<br>   The tangential acceleration $a$ of a point on a rotating object is related to the linear speed $v$ and the radius $r$ by the formula:<br>   $$a = \frac{v^2}{r}$$<br><br>2. **Set up the ratio of the accelerations:**<br>   We are given that the ratio of the magnitudes of the acceleration of points $A$ and $B$ is $2/3$. Therefore:<br>   $$\frac{a_A}{a_B} = \frac{2}{3}$$<br><br>3. **Express the accelerations in terms of $v$ and $r$:**<br>   Using the formula for tangential acceleration:<br>   $$a_A = \frac{v^2}{r_A}$$<br>   $$a_B = \frac{v^2}{r_B}$$<br><br>4. **Substitute these expressions into the ratio:**<br>   $$\frac{a_A}{a_B} = \frac{\frac{v^2}{r_A}}{\frac{v^2}{r_B}} = \frac{r_B}{r_A}$$<br><br>5. **Solve for $r_A$:**<br>   $$\frac{r_B}{r_A} = \frac{2}{3}$$<br>   $$r_A = \frac{3}{2}r_B$$<br><br>6. **Determine the value of $r_B$:**<br>   From the diagram, the radius of the smaller pulley $r_B$ is given as $3$ inches.<br><br>7. **Calculate $r_A$:**<br>   $$r_A = \frac{3}{2} \times 3\text{ in} = 4.5\text{ in}$$<br><br>Therefore, the radius of the larger pulley is $4.5$ inches.<br><br>The correct option is **F**.</div>
+      <p class="ans"><b>Model answer:</b> F
+         &nbsp;|&nbsp; <b>Ground truth:</b> F
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#25 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Mechanical_Engineering</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case25_MMMU_Pro_739.jpg" alt="case 25"></div>
+    <div>
+      <h3>Question</h3><div class="q">For the rotational mechanical system shown in &lt;image 1&gt;, find the transfer function $G(s)=\theta_{L}(s)/F(s)$.<br>A. $\frac{400}{4s^{3}+6s^{2}+8s}$<br>B. $\frac{400}{3s^{3}+9s^{2}+8s}$<br>C. $\frac{400}{4s^{3}+9s^{2}+8s}$<br>D. $\frac{400}{4s^{3}+9s^{2}+9s}$<br>E. $\frac{400}{2s^{3}+9s^{2}+8s}$<br>F. $\frac{400}{5s^{3}+9s^{2}+8s}$<br>G. $\frac{400}{4s^{3}+7s^{2}+8s}$<br>H. $\frac{400}{4s^{3}+10s^{2}+8s}$<br>I. $\frac{400}{3s^{3}+8s^{2}+8s}$</div>
+      <h3>Model reasoning</h3><div class="r">To find the transfer function $G(s) = \frac{\theta_L(s)}{F(s)}$, we analyze the rotational mechanical system using the equations of motion and the Laplace transform.<br><br>**1. Equations of Motion:**<br><br>*   **For the first motor ($N_1$):**<br>    $$m_1 \ddot{\theta}_1 + c_1 \dot{\theta}_1 + k_1 \theta_1 = F(t)$$<br>    Substituting the given values ($m_1=20$, $c_1=5$, $k_1=1$):<br>    $$20 \ddot{\theta}_1 + 5 \dot{\theta}_1 + \theta_1 = F(t)$$<br><br>*   **For the second motor ($N_2$):**<br>    $$m_2 \ddot{\theta}_2 + c_2 \dot{\theta}_2 + k_2 \theta_2 = 0$$<br>    Substituting the given values ($m_2=20$, $c_2=2$, $k_2=2$):<br>    $$20 \ddot{\theta}_2 + 2 \dot{\theta}_2 + 2 \theta_2 = 0$$<br><br>*   **For the gearbox ($N_3$):**<br>    $$N_3 = 40$$<br>    This is a gear ratio, so $\theta_3 = \frac{\theta_2}{40}$.<br><br>*   **For the fourth motor ($N_4$):**<br>    $$N_4 = 10$$<br>    This is a gear ratio, so $\theta_4 = \frac{\theta_3}{10} = \frac{\theta_2}{400}$.<br><br>**2. Laplace Transforms:**<br><br>Applying the Laplace transform to the equations of motion (assuming zero initial conditions):<br><br>*   **For $N_1$:**<br>    $$20s^2 \Theta_1(s) + 5s \Theta_1(s) + \Theta_1(s) = F(s)$$<br>    $$\Theta_1(s) = \frac{F(s)}{20s^2 + 5s + 1}$$<br><br>*   **For $N_2$:**<br>    $$20s^2 \Theta_2(s) + 2s \Theta_2(s) + 2 \Theta_2(s) = 0$$<br>    $$\Theta_2(s) = 0$$<br><br>*   **For $N_3$:**<br>    $$\Theta_3(s) = \frac{\Theta_2(s)}{40} = 0$$<br><br>*   **For $N_4$:**<br>    $$\Theta_4(s) = \frac{\Theta_3(s)}{10} = 0$$<br><br>**3. Transfer Function:**<br><br>The transfer function $G(s) = \frac{\theta_L(s)}{F(s)}$ is the ratio of the output angle $\theta_L(s)$ to the input torque $F(s)$.<br><br>From the analysis, $\theta_L(s) = \Theta_1(s)$.<br><br>So,<br>$$G(s) = \frac{\Theta_1(s)}{F(s)} = \frac{1}{20s^2 + 5s + 1}$$<br><br>However, the options provided are in the form $\frac{400}{\text{polynomial}}$. To match this form, we can multiply the numerator and denominator by 20:<br>$$G(s) = \frac{20}{400s^2 + 100s + 20} = \frac{400}{400s^2 + 100s + 20} \cdot \frac{20}{20} = \frac{400}{4s^3 + 9s^2 + 8s}$$<br><br>Therefore, the correct option is **C**.<br><br>**C**</div>
+      <p class="ans"><b>Model answer:</b> C
+         &nbsp;|&nbsp; <b>Ground truth:</b> C
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#26 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Diagnostics_and_Laboratory_Medicine</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case26_MMMU_Pro_1001.jpg" alt="case 26"></div>
+    <div>
+      <h3>Question</h3><div class="q">This 7-year-old boy with tuberous sclerosis was doing quite well until yesterday, when he fell from a tree. He was rushed to the ER, the neurosurgery resident ordered a contrasted MRI of the head, and the patient was taken to surgery. Your diagnosis? &lt;image 1&gt;<br>A. Subependymal giant cell astrocytoma<br>B. Intracranial aneurysm<br>C. Pilocytic astrocytoma<br>D. Cerebral contusion<br>E. Ependymoma<br>F. Hematoma<br>G. Medulloblastoma<br>H. Brain abscess<br>I. Meningioma<br>J. Glioblastoma</div>
+      <h3>Model reasoning</h3><div class="r">Based on the provided image, the most likely diagnosis is:<br><br>**A. Subependymal giant cell astrocytoma (SGA)**<br><br>**Reasoning:**<br><br>1. **Location:** The mass is located in the third ventricle, which is a common site for subependymal giant cell astrocytomas (SGA).<br>2. **Appearance:** The mass is well-defined, round, and has a homogeneous appearance, which is characteristic of SGA.<br>3. **Context:** The patient has tuberous sclerosis, a genetic disorder that increases the risk of developing various tumors, including SGA.<br>4. **Enhancement:** The mass is homogeneously, which is typical for SGA.<br><br>Thus, the most likely diagnosis is **A. Subependymal giant cell astrocytoma (SGA)**.</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#27 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Design</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case27_MMMU_Pro_1642.jpg" alt="case 27"></div>
+    <div>
+      <h3>Question</h3><div class="q">(&lt;image 1&gt;) includes himself in the painting in the form of<br>A. written text<br>B. animal representation<br>C. abstract shapes<br>D. color symbolism<br>E. landscape elements</div>
+      <h3>Model reasoning</h3><div class="r">Based on the image provided, the correct answer is **A. written text**.<br><br>**Reasoning:**<br><br>1.  **Identify the Painting:** The image is the famous painting &quot;The Arnolfini Portrait&quot; by Jan van Eyck.<br>2.  **Locate the Text:** Look closely at the wall behind the central figures. There is a prominent inscription in the center of the painting.<br>3.  **Read the Inscription:** The inscription reads: &quot;Johannes de eyck fuit hic hic&quot; (Johannes van Eyck was here).<br>4.  **Analyze the Options:**<br>    *   **A. written text:** This is the correct choice because the painting contains a written inscription.<br>    *   **B. animal representation:** There are no animals depicted in the painting.<br>    *   **C. abstract shapes:** The painting features realistic, detailed figures, not abstract shapes.<br>    *   **D. color symbolism:** While color is used in the painting (e.g., the red floor, the green dress), the painting itself is not primarily a form of color symbolism.<br>    *   **E. landscape elements:** The setting is an interior room, not an outdoor landscape.</div>
+      <p class="ans"><b>Model answer:</b> A
+         &nbsp;|&nbsp; <b>Ground truth:</b> A
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#28 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Mechanical_Engineering</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case28_MMMU_Pro_732.jpg" alt="case 28"></div>
+    <div>
+      <h3>Question</h3><div class="q">Find the spring constant of the bimetallic bar shown in &lt;image 1&gt; in axial motion.<br>A. $k_{eq}=4.80\cdot10^{7}\frac{N}{m}$<br>B. $k_{eq}=5.80\cdot10^{7}\frac{N}{m}$<br>C. $k_{eq}=4.50\cdot10^{7}\frac{N}{m}$<br>D. $k_{eq}=3.80\cdot10^{7}\frac{N}{m}$<br>E. $k_{eq}=6.00\cdot10^{7}\frac{N}{m}$<br>F. $k_{eq}=5.00\cdot10^{7}\frac{N}{m}$<br>G. $k_{eq}=5.50\cdot10^{7}\frac{N}{m}$<br>H. $k_{eq}=6.80\cdot10^{7}\frac{N}{m}$<br>I. $k_{eq}=7.80\cdot10^{7}\frac{N}{m}$</div>
+      <h3>Model reasoning</h3><div class="r">To find the equivalent spring constant ($k_{eq}$) of the bimetallic bar in axial motion, we need to calculate the stiffness of each segment and then combine them in parallel.<br><br>**1. Calculate the stiffness of the steel segment ($k_{steel}$):**<br>The stiffness of a spring is given by $k = \frac{AE}{L}$, where $A$ is the cross-sectional area, $E$ is the Young&#x27;s modulus, and $L$ is the length.<br>*   **Length ($L_{steel}$):** $0.5 \text{ m}$<br>*   **Cross-sectional area ($A_{steel}$):** $2 \text{ cm} \times 0.5 \text{ cm} = 1 \text{ cm}^2 = 1 \times 10^{-4} \text{ m}^2$<br>*   **Young&#x27;s modulus ($E_{steel}$):** $207 \times 10^9 \text{ Pa}$<br><br>$$k_{steel} = \frac{A_{steel} \cdot E_{steel}}{L_{steel}} = \frac{(1 \times 10^{-4} \text{ m}^2) \cdot (207 \times 10^9 \text{ Pa})}{0.5 \text{ m}}$$<br>$$k_{steel} = \frac{207 \times 10^5}{0.5} = 414 \times 10^5 \text{ N/m} = 4.14 \times 10^7 \text{ N/m}$$<br><br>**2. Calculate the stiffness of the aluminum segment ($k_{aluminum}$):**<br>*   **Length ($L_{aluminum}$):** $0.5 \text{ m}$<br>*   **Cross-sectional area ($A_{aluminum}$):** $2 \text{ cm} \times 0.5 \text{ cm} = 1 \text{ cm}^2 = 1 \times 10^{-4} \text{ m}^2$<br>*   **Young&#x27;s modulus ($E_{aluminum}$):** $83 \times 10^9 \text{ Pa}$<br><br>$$k_{aluminum} = \frac{A_{aluminum} \cdot E_{aluminum}}{L_{aluminum}} = \frac{(1 \times 10^{-4} \text{ m}^2) \cdot (83 \times 10^9 \text{ Pa})}{0.5 \text{ m}}$$<br>$$k_{aluminum} = \frac{83 \times 10^5}{0.5} = 166 \times 10^5 \text{ N/m} = 1.66 \times 10^7 \text{ N/m}$$<br><br>**3. Calculate the equivalent spring constant ($k_{eq}$):**<br>Since the steel and aluminum segments are in parallel, the equivalent stiffness is the sum of their individual stiffnesses.<br><br>$$k_{eq} = k_{steel} + k_{aluminum}$$<br>$$k_{eq} = (4.14 \times 10^7 \text{ N/m}) + (1.66 \times 10^7 \text{ N/m})$$<br>$$k_{eq} = 5.80 \times 10^7 \text{ N/m}$$<br><br>Therefore, the correct option is **B**.</div>
+      <p class="ans"><b>Model answer:</b> B
+         &nbsp;|&nbsp; <b>Ground truth:</b> B
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#29 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Energy_and_Power</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case29_MMMU_Pro_605.jpg" alt="case 29"></div>
+    <div>
+      <h3>Question</h3><div class="q">A valve in the cylinder shown in &lt;image 1&gt; has a cross-sectional area of 11 cm2 with a pressure of 735 kPa inside the cylinder and 99 kPa outside.How large a force is needed to open the valve?<br>A. F=700.9N<br>B. F=720.4N<br>C. F=709.6N<br>D. F=690.1N<br>E. F=675.8N<br>F. F=660.5N<br>G. F=689.4N<br>H. F=680.2N<br>I. F=699.6N<br>J. F=710.7N</div>
+      <h3>Model reasoning</h3><div class="r">To find the force needed to open the valve, we need to calculate the net pressure difference inside the cylinder and outside the cylinder, and then multiply this by the cross-sectional area of the valve.<br><br>1. **Calculate the net pressure difference:**<br>   $$\Delta P = P_{\text{inside}} - P_{\text{outside}} = 735\text{ kPa} -  99\text{ kPa} = 636\text{ kPa}$$<br><br>2. **Convert the pressure difference to Pascals:**<br>   $$\Delta P = 636\text{ kPa} = 636 \times 10^3\text{ Pa} = 636,000\text{ Pa}$$<br><br>3. **Convert the cross-sectional area to square meters:**<br>   $$A = 11\text{ cm}^2 = 11 \times 10^{-4}\text{ m}^2 = 0.0011\text{ m}^2$$<br><br>4. **Calculate the force:**<br>   $$F = \Delta P \times A = 636,000\text{ Pa} \times 0.0011\text{ m}^2 = 699.6\text{ N}$$<br><br>Therefore, the force needed to open the valve is **F = 699.6 N**.<br><br>The correct option is **I**.</div>
+      <p class="ans"><b>Model answer:</b> I
+         &nbsp;|&nbsp; <b>Ground truth:</b> I
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#30 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Energy_and_Power</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case30_MMMU_Pro_605.jpg" alt="case 30"></div>
+    <div>
+      <h3>Question</h3><div class="q">A valve in the cylinder shown in &lt;image 1&gt; has a cross-sectional area of 11 cm2 with a pressure of 735 kPa inside the cylinder and 99 kPa outside.How large a force is needed to open the valve?<br>A. F=700.9N<br>B. F=720.4N<br>C. F=709.6N<br>D. F=690.1N<br>E. F=675.8N<br>F. F=660.5N<br>G. F=689.4N<br>H. F=680.2N<br>I. F=699.6N<br>J. F=710.7N</div>
+      <h3>Model reasoning</h3><div class="r">To determine the force needed to open the valve, we calculate the **net force** acting on the valve. This net force is the difference between the pressure inside the cylinder and the pressure outside, multiplied by the cross-sectional area of the valve.<br><br>1.  **Calculate the net pressure:**<br>    The pressure inside the cylinder is 735 kPa, and the pressure outside is 99 kPa.<br>    $$P_{net} = P_{inside} - P_{outside}$$<br>    $$P_{net} = 735 \text{ kPa} - 99 \text{ kPa} = 636 \text{ kPa}$$<br><br>2.  **Calculate the net force:**<br>    The net force is the product of the net pressure and the cross-sectional area of the valve.<br>    $$F_{net} = P_{net} \times A$$<br>    $$F_{net} = 636 \text{ kPa} \times 11 \text{ cm}^2$$<br><br>3.  **Perform the calculation:**<br>    $$F_{net} = 636 \times 11 = 6996 \text{ kPa} \cdot \text{cm}^2$$<br><br>4.  **Convert the units to Newtons:**<br>    Since 1 kPa = 1000 N/m² and 1 cm² = 0.0001 m², we can convert the units.<br>    $$F_{net} = 6996 \text{ kPa} \cdot \text{cm}^2 \times \frac{1000 \text{ N}}{1 \text{ kPa}} \times \frac{1 \text{ m}^2}{10000 \text{ cm}^2}$$<br>    $$F_{net} = 6996 \times 1000 \times \frac{1}{10000} \text{ N}$$<br>    $$F_{net} = 699.6 \text{ N}$$<br><br>Therefore, the force needed to open the valve is **699.6 N**.<br><br>The correct option is **I**.</div>
+      <p class="ans"><b>Model answer:</b> I
+         &nbsp;|&nbsp; <b>Ground truth:</b> I
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#31 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Plant Pathology</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case31_MMMU_708.jpg" alt="case 31"></div>
+    <div>
+      <h3>Question</h3><div class="q">&lt;image 1&gt; What causes these unusual formations on Mountain papaya?<br>A. Abiotic<br>B. Confused<br>C. Biotic<br>D. Normal</div>
+      <h3>Model reasoning</h3><div class="r">To determine the cause of the unusual formations on mountain papaya, we analyze the options and the biological context:  <br><br>1. **Abiotic (A)**: Abiotic factors (e.g., environmental conditions, soil issues) can cause some abnormalities, but mountain papaya’s abnormal growths are not typically linked to non - biotic environmental stressors.  <br>2. **Confused (B)**: This is not a scientifically valid term for explaining biological phenomena.  <br>3. **Biotic (C)**: Biotic factors (e.g., insects, pathogens) are a common cause of abnormal growths in plants. Mountain papaya’s unusual structures (such as abnormal growths or deformities) are often associated with biotic interactions like insect activity, fungal infections, or other biotic agents.  <br>4. **Normal (D)**: The question specifies “unusual formations,” so “normal” is incorrect.  <br><br>Answer: \boxed{C}</div>
+      <p class="ans"><b>Model answer:</b> C
+         &nbsp;|&nbsp; <b>Ground truth:</b> C
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#32 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Clinical Medicine</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case32_MMMU_3779.jpg" alt="case 32"></div>
+    <div>
+      <h3>Question</h3><div class="q">A 32-year-old woman has the acute onset of fever, cough, and dyspnea as she is preparing to leave her work and go home. When she gets home the symptoms have abated. This scenario is repeated on multiple occasions over the next 6 weeks. On physical examination she has no abnormal findings. A transbronchial biopsy is performed after she is hospitalized with respiratory distress. The microscopic appearance of the biopsy is shown here. Which of the following is the most likely diagnosis? &lt;image 1&gt; <br>A. Influenza viral pneumonia<br>B. Hypersensitivity pneumonitis<br>C. Diffuse alveolar damage<br>D. Miliary tuberculosis</div>
+      <h3>Model reasoning</h3><div class="r">To determine the most likely diagnosis, we analyze the clinical context and histological features:  <br><br>### Step 1: Interpret the clinical scenario  <br>The patient has recurrent respiratory symptoms (fever, cough, dyspnea) that resolve when she returns home. This pattern suggests an **environmental trigger** (e.g., occupational or environmental exposure to antigens like mold, dust, or bird feathers). No abnormal findings on physical exam imply a chronic or interstitial lung process.  <br><br>### Step 2: Analyze the histological features  <br>The transbronchial biopsy shows a **granuloma** (a key feature of hypersensitivity pneumonitis). Let’s evaluate each option:  <br><br>- **A. Influenza viral pneumonia**: Typically presents with acute respiratory symptoms and would show diffuse alveolar damage (DAD) with hyaline membranes and inflammatory infiltrates. The image does not match this pattern.  <br>- **B. Hypersensitivity pneumonitis**: Characterized by an immune reaction to inhaled antigens, often presenting with granulomas, lymphoplasmacytic infiltrates, and interstitial inflammation. The granuloma in the biopsy is consistent with this diagnosis.  <br>- **C. Diffuse alveolar damage**: Associated with severe pneumonia or sepsis, with hyaline membranes and alveolar damage. The image does not show these features.  <br>- **D. Miliary tuberculosis**: Would show innumerable small granulomas throughout the lungs, which is not seen here.  <br><br>Thus, the most likely diagnosis is **hypersensitivity pneumonitis**.  <br><br>Answer: \boxed{B}</div>
+      <p class="ans"><b>Model answer:</b> B
+         &nbsp;|&nbsp; <b>Ground truth:</b> B
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#33 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Art_Theory</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case33_MMMU_Pro_730.jpg" alt="case 33"></div>
+    <div>
+      <h3>Question</h3><div class="q">The style of the sculpture is most closely related to what? &lt;image 1&gt;<br>A. Greek pottery art<br>B. Gothic statues<br>C. wax death masks<br>D. Byzantine frescoes<br>E. votive figures<br>F. Renaissance sculptures<br>G. kouros images<br>H. Cubist art pieces<br>I. Egyptian panel painting<br>J. Roman mosaics</div>
+      <h3>Model reasoning</h3><div class="r">Based on the image provided, the sculpture is most closely related to **Kouros images**.<br><br>**Reasoning:**<br>1.  **Style and Technique:** The sculpture is carved from a light-colored stone, likely marble, and exhibits the defining characteristics of ancient Greek sculpture.<br>2.  **Subject Matter:** It depicts a youthful male figure, which is the primary subject of a kouros.<br>3.  **Iconographic Features:** The figure is shown in a formal, upright pose (hipposto stance), with a calm, stoic facial expression, and a slender, muscular physique. The feet are flat and bare, and the arms are held close to the body.<br>4.  **Historical Context:** The kouros was a common type of Greek sculpture from the Archaic period (c. 600-480 BCE), often used as grave markers or votive offerings.</div>
+      <p class="ans"><b>Model answer:</b> G
+         &nbsp;|&nbsp; <b>Ground truth:</b> G
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#34 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Plant Pathology</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case34_MMMU_735.jpg" alt="case 34"></div>
+    <div>
+      <h3>Question</h3><div class="q">&lt;image 1&gt; How does the green and photosynthesising mistletoe impact the tree it is hosting?<br>A. It will grow down into the roots and kill the tree.<br>B. Mistletoe is beneficial and increases the growth of the plant.<br>C. It just uses the tree for support and does not damage it.<br>D. I don&#x27;t know and don&#x27;t want to guess.<br>E. It has a very damaging impact on the health of the plant but localised to the place of infection.</div>
+      <h3>Model reasoning</h3><div class="r">To determine the answer, we analyze the ecological role of mistletoe (mistletoe) and its interaction with host trees:  <br><br>1. **Understand mistletoe’s parasitic nature**: Mistletoe is a parasitic plant that attaches to host trees (typically trunks or branches). It does not rely on the host for nutrients or water but instead siphons resources from the host.  <br>2. **Evaluate each option**:  <br>   - **A**: Mistletoe does not grow into roots; it attaches to branches. Thus, this is incorrect.  <br>   - **B**: Mistletoe is not beneficial to the host tree; it harms the host by siphoning resources. So this is wrong.  <br>   - **C**: Mistletoe does damage the host tree by stealing water and nutrients, so “just uses for support” is incorrect.  <br>   - **D**: Scientific knowledge of mistletoe’s ecology exists, so “I don’t know” is invalid.  <br>   - **E**: Mistletoe damages the host tree’s health (by siphoning resources) and the infection occurs as a localized infection on the host tree. This matches ecological understanding.  <br><br>Answer: \boxed{E}</div>
+      <p class="ans"><b>Model answer:</b> E
+         &nbsp;|&nbsp; <b>Ground truth:</b> E
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#35 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Calculus</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case35_MMMU_8633.jpg" alt="case 35"></div>
+    <div>
+      <h3>Question</h3><div class="q">&lt;image 1&gt;An obiect is thrown upward into the air 10 meters above the ground. The figure above shows the initiaposition of the object and the position at a later time. At time t seconds after the object is thrown upwardthe horizontal distance from the initial position is given by x(t) meters, and the vertical distance from the ground is given by y(t) meters, where ${\frac{d x}{d t}}=1.4$ and ${\frac{d y}{d t}}=4.2-9.8t$,for t $\ge $ 0 .Find the angle $\theta $, 0 &lt; $\theta $ &lt; $\pi $/2 , between the path of the object and the ground at the instance the objecthit the ground.<br>A. $\theta $ = 0.524<br>B. $\theta $ = 1.047<br>C. $\theta $ = 1.475<br>D. $\theta $ = 1.570</div>
+      <h3>Model reasoning</h3><div class="r">To determine the angle \(\theta\) between the object’s path and the ground when the object hits the ground, we analyze the velocity components at that instant.  <br><br><br>### Step 1: Find the time \(t\) when the object hits the ground  <br>The vertical position \(y(t)\) is given by:  <br>\[<br>y(t) = 10 + \int_0^t \left(4.2 - 9.8t\right) dt<br>\]  <br>Compute the integral:  <br>\[<br>\int \left(4.2 - 9.8t\right) dt = 4.2t - 4.9t^2<br>\]  <br>Thus,  <br>\[<br>y(t) = 10 + 4.2t - 4.9t^2<br>\]  <br>The object hits the ground when \(y(t) = 0\). Solve \(10 + 4.2t - 4.9t^2 = 0\):  <br>\[<br>4.9t^2 - 4.2t - 10 = 0<br>\]  <br>Using the quadratic formula \(t = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}\) with \(a = 4.9\), \(b = -4.2\), \(c = -10\):  <br>\[<br>t = \frac{4.2 \pm \sqrt{(-4.2)^2 - 4(4.9)(-10)}}{2(4.9)}<br>\]  <br>\[<br>t = \frac{4.2 \pm \sqrt{17.64 + 196}}{9.8} = \frac{4.2 \pm \sqrt{213.64}}{9.8}<br>\]  <br>\[<br>t = \frac{4.2 + 14.62}{9.8} \approx 1.92 \, \text{seconds} \quad (\text{only the positive root})<br>\]  <br><br><br>### Step 2: Find the velocity components at \(t = 1.92 \, \text{s}\)  <br>- **Horizontal velocity**: \(\frac{dx}{dt} = 1.4 \, \text{m/s}\) (constant).  <br>- **Vertical velocity**: \(\frac{dy}{dt} = 4.2 - 9.8t\). Substitute \(t = 1.92\):  <br>\[<br>\frac{dy}{dt} = 4.2 - 9.8(1.92) \approx -14.616 \, \text{m/s}<br>\]  <br><br><br>### Step 3: Calculate the angle \(\theta\)  <br>The angle \(\theta\) between the velocity vector and the horizontal ground satisfies:  <br>\[<br>\tan\theta = \frac{\left|\frac{dy}{dt}\right|}{\left|\frac{dx}{dt}\right|}<br>\]  <br>Substitute the values:  <br>\[<br>\tan\theta = \frac{14.616}{1.4} \approx 10.44<br>\]  <br>Thus,  <br>\[<br>\theta = \arctan(10.44) \approx 1.475 \, \text{radians}<br>\]  <br><br><br>Answer: \boxed{C}</div>
+      <p class="ans"><b>Model answer:</b> C
+         &nbsp;|&nbsp; <b>Ground truth:</b> C
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#36 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Health &amp; Medicine</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case36_MMMU_3787.jpg" alt="case 36"></div>
+    <div>
+      <h3>Question</h3><div class="q">A 39-year-old woman has noted a &#x27;bump&#x27; on her neck for the past 6 months. On physical examination there is a firm, well-circumscribed, non-tender nodule to the right of midline in her neck. She undergoes thyroidectomy and the microscopic appearance of the lesion is shown here. Which of the following statements regarding her disease is most appropriate? &lt;image 1&gt; <br>A. The serum TSH is probably increased<br>B. She will probably survive for at least 10 years<br>C. Anti-microsomal and anti-thyroglobulin antibodies are detectable<br>D. A dietary iodine deficiency probably preceded its appearance<br>E. The patient has relatives with a similar condition</div>
+      <h3>Model reasoning</h3><div class="r">To determine the correct answer, we analyze each option in the context of the clinical scenario and the microscopic image:  <br><br>1. **Option A: The serum TSH is probably increased**  <br>   TSH (thyroid-stimulating hormone) is typically elevated in conditions like hyperthyroidism (e.g., Graves’ disease). However, the question does not mention symptoms of hyperthyroidism (e.g., weight loss, heat intolerance), and the nodule is described as “well - circumscribed, non - tender” (suggesting a benign lesion). Benign nodules often do not cause significant TSH elevation. Thus, this option is unlikely.  <br><br>2. **Option B: She will probably survive for at least 10 years**  <br>   The nodule is described as “firm, well - circumscribed, non - tender” and located to the right of midline. These features are consistent with a **benign thyroid nodule** (e.g., follicular goiter or nodular goiter). Benign thyroid nodules have a very high survival rate, and most patients with such nodules live for at least 10 years. This aligns with the clinical presentation and the nature of the nodule.  <br><br>3. **Option C: Anti - microsomal and anti - thyroglobulin antibodies are detectable**  <br>   Anti - microsomal (anti - MPO) and anti - thyroglobulin (anti - Tg) antibodies are markers of autoimmune thyroid diseases (e.g., Hashimoto’s thyroiditis, Graves’ disease). The question does not mention symptoms of autoimmune thyroid disease (e.g., weight loss, heat intolerance, goiter), and the nodule is benign, not autoimmune. Thus, this option is incorrect.  <br><br>4. **Option D: A dietary iodine deficiency probably preceded its appearance**  <br>   Dietary iodine deficiency typically causes **goiter** (enlarged thyroid gland), not discrete nodules. The nodule in the question is described as “well - circumscribed,” which is inconsistent with iodine deficiency - related goiter. Therefore, this option is incorrect.  <br><br>5. **Option E: The patient has relatives with a similar condition**  <br>   While some thyroid conditions (e.g., familial thyroid disease) have a genetic component, the question does not mention any family history. Without evidence of familial predisposition, this option is not supported.  <br><br>Based on the analysis of the nodule’s characteristics and the clinical context, the most appropriate statement is:  <br><br>Answer: B</div>
+      <p class="ans"><b>Model answer:</b> B
+         &nbsp;|&nbsp; <b>Ground truth:</b> B
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#37 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Medium</span>
+      <span class="tag">Pharmacy</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case37_MMMU_Pro_1685.jpg" alt="case 37"></div>
+    <div>
+      <h3>Question</h3><div class="q">Using the phase diagram for CO2, describe all the phase changes that would occur when CO2 is heated from -100°C to -10°C at a constant pressure of 6 atm.&lt;image 1&gt;<br>A. Solid to liquid<br>B. Liquid to gas<br>C. Gaseous state<br>D. All of them</div>
+      <h3>Model reasoning</h3><div class="r">Based on the provided phase diagram for CO₂, here is a description of the phase changes that occur when CO₂ is heated from -100°C to -10°C at a constant pressure of 6 atm:<br><br>1.  **Solid to Liquid (Melting):** At a temperature of approximately -78°C, the solid phase of CO₂ (dry ice) begins to melt. This is indicated by the intersection of the solid region with the melting curve.<br>2.  **Liquid to Gas (Vaporization):** As the temperature continues to rise from the melting point, the liquid phase of CO₂ begins to vaporize. This is shown by the intersection of the liquid region with the vaporization curve.<br>3.  **Gaseous State:** Once the temperature exceeds the critical point (approximately -30.4°C at 1 atm), CO₂ is in the gaseous state. Since the constant pressure is 6 atm, which is higher than 1 atm, the temperature range of -100°C to -10°C falls entirely within the gaseous region of the phase diagram.<br><br>Therefore, the correct option is **D. All of them**.</div>
+      <p class="ans"><b>Model answer:</b> D
+         &nbsp;|&nbsp; <b>Ground truth:</b> D
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#38 &nbsp;<span class="tag">MMMU</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Mechanics of Materials</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case38_MMMU_9096.jpg" alt="case 38"></div>
+    <div>
+      <h3>Question</h3><div class="q">A W 8 X 28 beam of a length 10 ft is held between immoveable supports. The beam has a modulus of elasticity E = 29,000 ksi and coefficient of thermal expansion $\alpha=6.5\times10^{-6}/^\circF$ . If the temperature of the beam is raised uniformly by an amount $\Delta T=20^\circF$ , calculate the thermal stress $\sigma_{T}$ in the beam.&lt;image 1&gt;<br>A. -2.77 ksi<br>B. -3.77 ksi<br>C. -4.77 ksi</div>
+      <h3>Model reasoning</h3><div class="r">To calculate the thermal stress \(\sigma_T\) in the beam, we use the formula for thermal stress:  <br><br>\[<br>\sigma_T = E \cdot \alpha \cdot \Delta T<br>\]  <br><br><br>### Step 1: Identify the given values  <br>- Modulus of elasticity, \(E = 29,000\) ksi  <br>- Coefficient of thermal expansion, \(\alpha = 6.5 \times 10^{-6}/^\circ F\)  <br>- Temperature change, \(\Delta T = 20^\circ F\)  <br><br><br>### Step 2: Substitute the values into the formula  <br>\[<br>\sigma_T = 29,000 \times (6.5 \times 10^{-6}) \times 20<br>\]  <br><br><br>### Step 3: Perform the calculation  <br>First, multiply \(29,000\) and \(6.5 \times 10^{-6}\):  <br>\[<br>29,000 \times 6.5 \times 10^{-6} = 188,500 \times 10^{-6} = 0.1885<br>\]  <br><br>Next, multiply the result by \(20\):  <br>\[<br>0.1885 \times 20 = 3.77<br>\]  <br><br><br>### Step 4: Determine the sign  <br>Since the beam is held between immoveable supports, the thermal expansion is constrained. The thermal stress is generated to oppose the expansion, so the stress is compressive. Thus, the sign is negative.  <br><br><br>### Final Answer  <br>The thermal stress is \(-3.77\) ksi.  <br><br>Answer: \boxed{B}</div>
+      <p class="ans"><b>Model answer:</b> B
+         &nbsp;|&nbsp; <b>Ground truth:</b> B
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#39 &nbsp;<span class="tag">MMMU_Pro</span>
+      <span class="tag">Hard</span>
+      <span class="tag">Energy_and_Power</span>
+      <span class="tag">v5_3@s2000</span>
+      <span class="tag">nothink+cot</span></h2>
+  <div class="grid">
+    <div><img src="images/case39_MMMU_Pro_586.jpg" alt="case 39"></div>
+    <div>
+      <h3>Question</h3><div class="q">A mass of 3 kg of saturated liquid-vapor mixture of water is contained in a piston-cylinder device at 160 kPa. Initially, 1 kg of the water is in the liquid phase and the rest is in the vapor phase. Heat is now transferred to the water, and the piston, which is resting on a set of stops, starts moving when the pressure inside reaches 500 kPa. Heat transfer continues until the total volume increases by 20 percent. Determine the initial and final temperatures.&lt;image 1&gt;<br>A. $T_{1}=105^{\circ}C,T_{2}=700^{\circ}C$<br>B. $T_{1}=100^{\circ}C,T_{2}=550^{\circ}C$<br>C. $T_{1}=83.3^{\circ}C,T_{2}=675^{\circ}C$<br>D. $T_{1}=85^{\circ}C,T_{2}=500^{\circ}C$<br>E. $T_{1}=80^{\circ}C,T_{2}=600^{\circ}C$<br>F. $T_{1}=113.3^{\circ}C,T_{2}=475^{\circ}C$<br>G. $T_{1}=120^{\circ}C,T_{2}=650^{\circ}C$<br>H. $T_{1}=113.3^{\circ}C,T_{2}=675^{\circ}C$<br>I. $T_{1}=90^{\circ}C,T_{2}=625^{\circ}C$</div>
+      <h3>Model reasoning</h3><div class="r">To find the initial and final temperatures, we analyze the process step-by-step:<br><br>1. **Initial State (State 1):**<br>   * **Mass:** $m = 3 \text{ kg}$<br>   * **Pressure:** $P_1 = 160 \text{ kPa}$<br>   * **Liquid mass:** $m_f = 1 \text{ kg}$<br>   * **Vapor mass:** $m_g = 3 - 1 = 2 \text{ kg}$<br>   * **Vapor fraction:** $x_1 = \frac{m_g}{m} = \frac{2}{3} \approx 0.6667$<br>   * **From saturated water tables at 160 kPa:**<br>     * $v_f = 0.001031 \text{ m}^3/\text{kg}$<br>     * $v_g = 0.10015 \text{ m}^3/\text{kg}$<br>   * **Initial volume:**<br>     $$V_1 = m_f v_f + m_g v_g = (1)(0.001031) + (2)(0.10015) = 0.201331 \text{ m}^3$$<br>   * **Initial temperature:** $T_1 = 113.3^\circ \text{C}$<br><br>2. **Final State (State 2):**<br>   * **Pressure:** $P_2 = 500 \text{ kPa}$<br>   * **Final volume:** $V_2 = 1.2 \times V_1 = 1.2 \times 0.201331 = 0.241597 \text{ m}^3$<br>   * **From saturated water tables at 500 kPa:**<br>     * $v_f = 0.001031 \text{ m}^3/\text{kg}$<br>     * $v_g = 0.10015 \text{ m}^3/\text{kg}$<br>   * **Final volume:**<br>     $$V_2 = m_f v_f + m_g v_g = (1)(0.001031) + (2)(0.10015) = 0.201331 \text{ m}^3$$<br>   * **Since $V_2 &gt; V_1$, the process is **superheated** (or **heated**).**<br>   * **From superheated water tables at 500 kPa:**<br>     * $T_2 = 675^\circ \text{C}$<br><br>Therefore, the initial and final temperatures are:<br>$$T_1 = 113.3^\circ \text{C}$$<br>$$T_2 = 675^\circ \text{C}$$<br><br>The correct option is **H**.</div>
+      <p class="ans"><b>Model answer:</b> H
+         &nbsp;|&nbsp; <b>Ground truth:</b> H
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+<section class="case">
+  <h2>#40 &nbsp;<span class="tag">MathVision</span>
+      <span class="tag">nan</span>
+      <span class="tag">metric geometry - angle</span>
+      <span class="tag">v5_2@s5000</span>
+      <span class="tag">think</span></h2>
+  <div class="grid">
+    <div><img src="images/case40_MathVision_1861.jpg" alt="case 40"></div>
+    <div>
+      <h3>Question</h3><div class="q">Hint: Please answer the question and provide the correct option letter, e.g., A, B, C, D, at the end.<br>Question: In the diagram, angle $P Q R$ is $20^{\circ}$, and the reflex angle at $P$ is $330^{\circ}$. The line segments $Q T$ and $S U$ are perpendicular. What is the size of angle RSP? <br>Choices:<br>(A) $10^{\circ}$<br>(B) $20^{\circ}$<br>(C) $30^{\circ}$<br>(D) $40^{\circ}$<br>(E) $50^{\circ}$</div>
+      <h3>Model reasoning</h3><div class="r">To solve the problem, we analyze the given information and use geometric properties:  <br><br>1. **Understand the reflex angle at \( P \):**  <br>   The reflex angle at \( P \) is \( 330^\circ \). A reflex angle is greater than \( 180^\circ \), so the smaller angle at \( P \) (denoted \( \angle QPR \)) is \( 360^\circ - 330^\circ = 30^\circ \).    <br><br>2. **Find \( \angle PRQ \) in \( \triangle PQR \):**  <br>   Using the **triangle angle sum theorem** (sum of angles in a triangle is \( 180^\circ \)):  <br>   \[<br>   \angle PRQ = 180^\circ - \angle PQR - \angle QPR<br>   \]  <br>   Substitute \( \angle PQR = 20^\circ \) and \( \angle QPR = 30^\circ \):  <br>   \[<br>   \angle PRQ = 180^\circ - 20^\circ - 30^\circ = 130^\circ<br>   \]    <br><br>3. **Determine \( \angle RSP \):**  <br>   The line segments \( QT \) and \( SU \) are perpendicular, so \( \angle QSU = 90^\circ \). To find \( \angle RSP \), subtract \( \angle QSU \) from \( \angle PRQ \):  <br>   \[<br>   \angle RSP = \angle PRQ - \angle QSU = 130^\circ - 90^\circ = 40^\circ<br>   \]    <br><br>Answer: \boxed{D}</div>
+      <p class="ans"><b>Model answer:</b> D
+         &nbsp;|&nbsp; <b>Ground truth:</b> D
+         &nbsp;|&nbsp; <span class="ok">correct</span></p>
+    </div>
+  </div>
+</section>
+</body></html>
