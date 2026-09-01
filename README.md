@@ -4,7 +4,7 @@
 
 *Shanghai AI Laboratory*
 
-[[📑 Technical Report (Coming Soon)](#)] &emsp; [[🌐 Project Page](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 Model (Coming Soon)](#)]
+[[📑 Technical Report (Coming Soon)](#)] &emsp; [[🌐 Project Page](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 Model (Coming Soon)](https://huggingface.co/internlm/InternLumina-U2)]
 
 [English](./README.md) | [简体中文](./README_zh-CN.md)
 
@@ -14,7 +14,7 @@
 
 ## 📰 News
 
-- **[2026-08]** 🚀 We release the inference code (this repository). Model weights, the training code and the tech report are coming soon — see the [Roadmap](#-roadmap).
+- **[2026-08]** 🚀 We release the inference code (this repository). Model weights, the training code and the tech report are coming soon — see the [Roadmap](#roadmap).
 
 ## 🌟 Introduction
 
@@ -66,7 +66,7 @@ Intern Lumina U2 surpasses unified models such as InternVL-U, LLaDA2.0-Uni, Show
 
 ## 📦 Release Scope
 
-> **This repository contains the inference code only.** Model weights and the training code (a separate repository), the Ascend stack and the tech report will be released subsequently — see the [Roadmap](#-roadmap).
+> **This repository contains the inference code only.** Model weights and the training code (a separate repository), the Ascend stack and the tech report will be released subsequently — see the [Roadmap](#roadmap).
 
 ## 🛠️ Installation
 
@@ -207,6 +207,7 @@ python tools/tokenize_image.py --image path/to/folder --max_edge 512 \
 
 For 3D assets the equivalent offline encoder is `atoken_inference/glb_encode/encode_glb_tokens.py` (`--glb ... --output ...`; requires Blender, see the 3D note above).
 
+<a id="roadmap"></a>
 ## 🗺️ Roadmap
 
 - [x] Inference code for T2I / editing / image, video and 3D understanding
