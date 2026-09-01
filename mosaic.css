@@ -259,8 +259,8 @@ body { background: linear-gradient(145deg, #fffaf4 0%, #fff5ed 55%, #fff0e6 100%
 
 .method { padding: 104px 0 112px; }
 .method-intro { display: block; margin-bottom: 27px; }
-.method-intro h2 { max-width: none; margin: 0; color: #20252d; font-size: clamp(42px, 4.5vw, 64px); line-height: 1; letter-spacing: -.065em; }
-.method-intro h2 em { color: #df7756; font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -.065em; }
+.method-intro h2 { max-width: none; margin: 0; color: #20252d; font-size: clamp(42px, 4.5vw, 64px); line-height: 1; letter-spacing: -.02em; }
+.method-intro h2 em { color: #df7756; font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -.015em; }
 .method-intro > p:last-child { display: none; }
 
 .method-figure { margin: 0; padding: 16px; border: 1px solid #ead7c7; border-radius: 15px; background: #fffdf9; box-shadow: 0 15px 34px #8f593016; }
@@ -272,10 +272,10 @@ body { background: linear-gradient(145deg, #fffaf4 0%, #fff5ed 55%, #fff0e6 100%
 .method-details { display: grid; gap: 62px; margin-top: 76px; }
 .method-figure-heading { display: block; margin: 4px 5px 23px; }
 .method-figure-heading .overline { margin: 0; }
-.method-figure-heading h3 { margin: 0; color: #3f312f; font: 400 clamp(29px, 3vw, 42px)/1.03 Georgia, "Times New Roman", serif; letter-spacing: -.045em; text-align: left; }
+.method-figure-heading h3 { margin: 0; color: #3f312f; font: 400 clamp(29px, 3vw, 42px)/1.03 Georgia, "Times New Roman", serif; letter-spacing: -.015em; text-align: left; }
 .method-architecture-heading { margin: 3px 5px 27px; }
-.method-architecture-heading h3 { max-width: 900px; color: #20252d; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: clamp(40px, 4.4vw, 68px); font-weight: 740; line-height: .94; letter-spacing: -.07em; }
-.method-architecture-heading h3 em { color: #df7756; font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -.065em; }
+.method-architecture-heading h3 { max-width: 900px; color: #20252d; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: clamp(40px, 4.4vw, 68px); font-weight: 740; line-height: .94; letter-spacing: -.02em; }
+.method-architecture-heading h3 em { color: #df7756; font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -.015em; }
 
 .results-heading { margin-bottom: 34px; }
 .results-heading h2 { font-size: clamp(42px, 5.1vw, 68px); line-height: 1; }
@@ -406,10 +406,10 @@ main { display: flex; flex-direction: column; }
 .demo-intro h2 { margin: 0; color: #49322f; font-size: clamp(48px, 5.7vw, 78px); }
 .demo-intro h2 em { color: #d65f61; }
 .gallery .split-heading { margin-bottom: 34px; }
-.gallery .split-heading h3 { margin: 0; color: #49322f; font: 400 clamp(29px, 3.4vw, 47px)/1.05 Georgia, "Times New Roman", serif; letter-spacing: -.045em; }
+.gallery .split-heading h3 { margin: 0; color: #49322f; font: 400 clamp(29px, 3.4vw, 47px)/1.05 Georgia, "Times New Roman", serif; letter-spacing: -.015em; }
 .task-head { margin-bottom: 30px; }
 .task-head span { font-size: 26px; }
-.task-head h3 { font: 400 clamp(39px, 4.25vw, 61px)/.98 Georgia, "Times New Roman", serif; letter-spacing: -.055em; }
+.task-head h3 { font: 400 clamp(39px, 4.25vw, 61px)/.98 Georgia, "Times New Roman", serif; letter-spacing: -.02em; }
 
 .example-card { flex-basis: clamp(360px, 36vw, 470px); min-height: 286px; padding: 19px; }
 .example-art { background-size: 320% auto; }
