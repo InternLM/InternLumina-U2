@@ -12,9 +12,58 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import torch
+
+from ..utils.device import get_device_type
+from ..utils.import_utils import is_fused_moe_available
 from .attention import flash_attention_forward
-from .fused_moe import fused_moe_forward
 from .loss import causallm_loss_function
+
+
+_fused_moe_kernel = None
+
+
+def _get_fused_moe_kernel():
+    """Resolve the fused MoE kernel matching the current device, once per process."""
+    global _fused_moe_kernel
+    if _fused_moe_kernel is None:
+        if get_device_type() == "npu":
+            from .npu_group_gemm import npu_fused_moe_forward
+
+            _fused_moe_kernel = npu_fused_moe_forward
+        elif is_fused_moe_available():
+            from .fused_moe import fused_moe_forward as triton_fused_moe_forward
+
+            _fused_moe_kernel = triton_fused_moe_forward
+        else:
+            raise RuntimeError(
+                "No fused MoE kernel is available, it requires either torch_npu on Ascend NPU "
+                "or triton on a CUDA device."
+            )
+
+    return _fused_moe_kernel
+
+
+def fused_moe_forward(
+    module: torch.nn.Module,
+    num_experts: int,
+    routing_weights: torch.Tensor,
+    selected_experts: torch.Tensor,
+    hidden_states: torch.Tensor,
+    fc1_1_weight: torch.Tensor,
+    fc1_2_weight: torch.Tensor,
+    fc2_weight: torch.Tensor,
+):
+    return _get_fused_moe_kernel()(
+        module,
+        num_experts,
+        routing_weights,
+        selected_experts,
+        hidden_states,
+        fc1_1_weight,
+        fc1_2_weight,
+        fc2_weight,
+    )
 
 
 __all__ = [
