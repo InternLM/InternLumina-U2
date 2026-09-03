@@ -12,3 +12,6 @@ atoken_inference/checkpoints/
 logfile
 VeOmni/veomni.egg-info/
 third_party/
+output_*/
+kernel_meta/
+fusion_result.json
