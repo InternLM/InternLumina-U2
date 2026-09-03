@@ -42,7 +42,7 @@ Intern Lumina U2 探索了一条新路径：**多码本全离散建模**。
 
 **3. 基于 LLaDA-2.0 MoE 的架构。** 语言骨干为 LLaDA-2.0 MoE 扩散语言模型（16B-A1B），其块扩散目标、稀疏专家容量与语言能力通过联合多任务训练扩展至统一视觉任务。
 
-**4. 双硬件生态。** Intern Lumina U2 全面适配 **NVIDIA GPU 与华为昇腾 NPU**，覆盖训练、评测与推理，完成双后端算子级数值对齐并构建可平滑切换的端到端管线。在昇腾侧，通过 FLA、GMM 等融合算子缓解 MoE 稀疏架构与长序列训练的访存与 kernel launch 瓶颈、HSDP 分片寻优平衡通信与显存、gradient checkpointing 提升单卡最大序列长度等系统性优化，千卡级昇腾集群训练效率提升 **1.85 倍**。
+**4. 双硬件生态。** Intern Lumina U2 全面适配 **NVIDIA GPU 与昇腾 NPU**，覆盖训练、评测与推理，完成双后端算子级数值对齐并构建可平滑切换的端到端管线。在昇腾侧，通过 FLA、GMM 等融合算子缓解 MoE 稀疏架构与长序列训练的访存与 kernel launch 瓶颈、HSDP 分片寻优平衡通信与显存、gradient checkpointing 提升单卡最大序列长度等系统性优化，千卡级昇腾集群训练效率提升 **1.85 倍**。
 
 ## 🏆 评测结果
 
@@ -101,6 +101,10 @@ pip install -e VeOmni/ --no-deps
 - 根驱动脚本刻意保持单进程（`INFER_NPROC_PER_NODE=1`），每个进程处理一个请求，不会将 batch 切分到多卡。
 - 根驱动脚本会先切换到仓库根目录再启动 Python，因此相对路径的 checkpoint / 素材 / token / 输出均相对该根目录解析。在其他目录调用时请设置 `LUMINA_ROOT=/path/to/InternLumina-U2`；直接调用 Python 入口时请使用绝对路径或在仓库根目录运行。
 - `requirements.txt` 中安装 `trimesh`，因为内置的 GLB/GLTF 编码器与网格回退路径需要它；`plyfile` 与 `diff-gaussian-rasterization` 是面向外部高斯泼溅资产的可选扩展。
+
+## 🖥️ 昇腾 NPU
+
+昇腾 NPU 的适配位于 [`ascend-npu-support`](https://github.com/InternLM/InternLumina-U2/tree/ascend-npu-support) 分支，而非 `main`。该分支的 LLM 骨干运行在 `torch_npu` 融合注意力内核上，融合 MoE 经由 NPU grouped matmul，因此需要 CANN 与配套的 `torch_npu`，取代上面的 CUDA 工具链与 `flash-attn`。
 
 ## 🎨 推理
 
@@ -208,7 +212,7 @@ python tools/tokenize_image.py --image path/to/folder --max_edge 512 \
 - [x] T2I / 编辑 / 图像、视频与 3D 理解的推理代码
 - [ ] 模型权重
 - [ ] 训练代码
-- [ ] 昇腾 NPU 训练与推理适配
+- [x] 昇腾 NPU 训练与推理适配
 - [ ] 技术报告
 
 ## 🙏 致谢

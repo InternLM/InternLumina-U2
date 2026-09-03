@@ -42,7 +42,7 @@ Intern Lumina U2 explores a new path: **fully-discrete multi-codebook modeling**
 
 **3. Architecture built on LLaDA-2.0 MoE.** The language backbone is the LLaDA-2.0 MoE diffusion language model(16B-A1B). Its block-diffusion objective, sparse-expert capacity and language competence are extended to unified visual tasks through joint multi-task training.
 
-**4. Dual hardware ecosystems.** Intern Lumina U2 is adapted to both **NVIDIA GPUs and Huawei Ascend NPUs** across training, evaluation and inference, with operator-level numerical alignment between the two backends and an end-to-end pipeline that switches smoothly between them. On Ascend, systematic optimization — fused operators (e.g. FLA and GMM) that relieve the memory-access and kernel-launch bottlenecks of the sparse MoE architecture and long-sequence training, HSDP sharding tuned to balance communication cost against memory footprint, and gradient checkpointing to raise the maximum per-device sequence length — improves training efficiency on a thousand-card Ascend cluster by **1.85x**.
+**4. Dual hardware ecosystems.** Intern Lumina U2 is adapted to both **NVIDIA GPUs and Ascend NPUs** across training, evaluation and inference, with operator-level numerical alignment between the two backends and an end-to-end pipeline that switches smoothly between them. On Ascend, systematic optimization — fused operators (e.g. FLA and GMM) that relieve the memory-access and kernel-launch bottlenecks of the sparse MoE architecture and long-sequence training, HSDP sharding tuned to balance communication cost against memory footprint, and gradient checkpointing to raise the maximum per-device sequence length — improves training efficiency on a thousand-card Ascend cluster by **1.85x**.
 
 ## 🏆 Benchmarks
 
@@ -104,6 +104,10 @@ Notes:
 - The root driver is intentionally single-process (`INFER_NPROC_PER_NODE=1`); run one request per process. It does not partition a batch across GPUs.
 - The root driver changes into the repository root before launching Python, so relative checkpoint, asset, token, and output paths are resolved relative to that root. Set `LUMINA_ROOT=/path/to/InternLumina-U2` when invoking the driver from another directory; direct Python entrypoints should receive absolute paths or be run from the repository root.
 - `trimesh` is installed by `requirements.txt` because the bundled GLB/GLTF encoder and the mesh fallback need it. `plyfile` and `diff-gaussian-rasterization` are optional extensions for external Gaussian-splat assets.
+
+## 🖥️ Ascend NPU
+
+Ascend NPU support lives on the [`ascend-npu-support`](https://github.com/InternLM/InternLumina-U2/tree/ascend-npu-support) branch rather than on `main`. It runs the LLM backbone on the `torch_npu` fused attention kernel and routes fused MoE through the NPU grouped matmul, so it needs CANN and a matching `torch_npu` build in place of the CUDA toolchain and `flash-attn` above.
 
 ## 🎨 Inference
 
@@ -213,7 +217,7 @@ For 3D assets the equivalent offline encoder is `atoken_inference/glb_encode/enc
 - [x] Inference code for T2I / editing / image, video and 3D understanding
 - [ ] Model weights
 - [ ] Training code 
-- [ ] Ascend NPU training & inference stack
+- [x] Ascend NPU training & inference stack
 - [ ] Tech report
 
 ## 🙏 Acknowledgements
