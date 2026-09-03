@@ -56,12 +56,14 @@ from .configuration_internluminau2 import LLaDA2MoeConfig
 from transformers.generation.utils import GenerationMixin
 from veomni.ops import fused_moe_forward
 from veomni.distributed.parallel_state import get_parallel_state
-from veomni.utils.import_utils import is_liger_kernel_available
+from veomni.utils.import_utils import is_liger_kernel_available, is_torch_npu_available
 from veomni.utils import logging
 
 from .tokenbridge import CausalBlock, FinalLayer
 from functools import partial
 
+if is_torch_npu_available():
+    import torch_npu
 
 if is_liger_kernel_available():
     from liger_kernel.ops.swiglu import LigerSiLUMulFunction
@@ -750,6 +752,40 @@ def _segmented_sdpa(query_states, key_states, value_states, attention_mask, seg_
     return torch.cat(outputs, dim=2)
 
 
+def _segmented_npu_attention(query_states, key_states, value_states, attention_mask, seg_bounds, dropout_p, head_num, scale):
+    """Block-diagonal NPU attention: one npu_fusion_attention call per packed segment, plus one for the tail pad."""
+    seq_len = query_states.shape[2]
+    outputs = []
+    for start, end in zip(seg_bounds, seg_bounds[1:]):
+        outputs.append(
+            torch_npu.npu_fusion_attention(
+                query_states[:, :, start:end, :].contiguous(),
+                key_states[:, :, start:end, :].contiguous(),
+                value_states[:, :, start:end, :].contiguous(),
+                head_num, "BNSD",
+                atten_mask=attention_mask[:, :, start:end, start:end].contiguous().bool(),
+                scale=scale,
+                keep_prob=1.0 - dropout_p,
+            )[0]
+        )
+
+    tail = seg_bounds[-1]
+    if tail < seq_len:
+        outputs.append(
+            torch_npu.npu_fusion_attention(
+                query_states[:, :, tail:, :].contiguous(),
+                key_states,
+                value_states,
+                head_num, "BNSD",
+                atten_mask=attention_mask[:, :, tail:, :].contiguous().bool(),
+                scale=scale,
+                keep_prob=1.0 - dropout_p,
+            )[0]
+        )
+
+    return torch.cat(outputs, dim=2)
+
+
 def use_segmented_attention(module, attention_mask, seg_bounds, q_len, use_cache, past_key_value):
     """Whether this attention call takes the segmented path, and why not if it doesn't.
 
@@ -890,6 +926,110 @@ class LLaDA2MoeSdpaAttention(LLaDA2MoeAttention):
         return attn_output, None, past_key_value
 
 
+class LLaDA2MoeNpuAttention(LLaDA2MoeSdpaAttention):
+    """
+    LLaDA2Moe attention module using torch_npu.npu_fusion_attention. This module inherits from
+    `LLaDA2MoeSdpaAttention` as the weights of the module stays untouched. The only changes are on the
+    forward pass to adapt to the NPU fused attention API.
+    """
+
+    def forward(
+        self,
+        hidden_states: torch.Tensor,
+        attention_mask: Optional[torch.Tensor] = None,
+        position_ids: Optional[torch.LongTensor] = None,
+        past_key_value: Optional[Cache] = None,
+        output_attentions: bool = False,
+        use_cache: bool = False,
+        position_embeddings: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,  # necessary, but kept here for BC
+        seg_bounds: Optional[Tuple[int, ...]] = None,
+        **kwargs,
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
+
+        if output_attentions:
+            return super().forward(
+                hidden_states=hidden_states,
+                attention_mask=attention_mask,
+                position_ids=position_ids,
+                past_key_value=past_key_value,
+                output_attentions=output_attentions,
+                use_cache=use_cache,
+                position_embeddings=position_embeddings,
+            )
+
+        bsz, q_len, _ = hidden_states.size()
+
+        qkv = self.query_key_value(hidden_states)
+        qkv = qkv.view(bsz, q_len, self.num_heads + 2 * self.num_key_value_heads, self.head_dim)
+
+        query_states, key_states, value_states = qkv.split(
+            [self.num_heads, self.num_key_value_heads, self.num_key_value_heads], dim=-2
+        )
+        query_states = query_states.transpose(1, 2)
+        key_states = key_states.transpose(1, 2)
+        value_states = value_states.transpose(1, 2)
+
+        query_states = self.query_layernorm(query_states)
+        key_states = self.key_layernorm(key_states)
+
+        kv_seq_len = key_states.shape[-2]
+        if past_key_value is not None:
+            kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
+        cos, sin = position_embeddings
+
+        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
+
+        if past_key_value is not None:
+            cache_kwargs = {"sin": sin, "cos": cos}  # Specific to RoPE models
+            key_states, value_states = past_key_value.update(key_states, value_states, self.layer_idx, cache_kwargs)
+
+        key_states = repeat_kv(key_states, self.num_key_value_groups)
+        value_states = repeat_kv(value_states, self.num_key_value_groups)
+
+        if attention_mask is not None:
+            if attention_mask.size() != (bsz, 1, q_len, kv_seq_len):
+                raise ValueError(
+                    f"Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}"
+                )
+
+        # npu_fusion_attention needs q, k and v to share a dtype, which QK layernorm can break.
+        common_dtype = query_states.dtype
+        key_states = key_states.to(common_dtype)
+        value_states = value_states.to(common_dtype)
+
+        scale = self.head_dim ** -0.5
+        if use_segmented_attention(self, attention_mask, seg_bounds, q_len, use_cache, past_key_value):
+            attn_output = _segmented_npu_attention(
+                query_states,
+                key_states,
+                value_states,
+                attention_mask,
+                seg_bounds,
+                self.attention_dropout if self.training else 0.0,
+                self.num_heads,
+                scale,
+            )
+        else:
+            atten_mask = attention_mask.bool() if attention_mask is not None else None
+            attn_output = torch_npu.npu_fusion_attention(
+                query_states.contiguous(),
+                key_states.contiguous(),
+                value_states.contiguous(),
+                self.num_heads,
+                "BNSD",
+                atten_mask=atten_mask,
+                scale=scale,
+                keep_prob=1.0 - (self.attention_dropout if self.training else 0.0),
+            )[0]
+
+        attn_output = attn_output.transpose(1, 2).contiguous()
+        attn_output = attn_output.reshape(bsz, q_len, -1)
+
+        attn_output = self.dense(attn_output)
+
+        return attn_output, None, past_key_value
+
+
 class LLaDA2MoeFlexAttention(LLaDA2MoeAttention):
     # Adapted from LLaDA2MoeAttention.forward
     def forward(
@@ -976,6 +1116,7 @@ ATTENTION_CLASSES = {
     "eager": LLaDA2MoeAttention,
     "flex_attention": LLaDA2MoeFlexAttention,
     "sdpa": LLaDA2MoeSdpaAttention,
+    "npu": LLaDA2MoeNpuAttention,
 }
 
 
@@ -1196,6 +1337,10 @@ class LLaDA2MoeModel(LLaDA2MoePreTrainedModel):
         super().__init__(config)
         self.padding_idx = config.pad_token_id
         self.vocab_size = config.vocab_size
+
+        # On Ascend NPU, route the default sdpa implementation to the NPU kernel.
+        if getattr(config, "_attn_implementation", None) == "sdpa" and is_torch_npu_available():
+            config._attn_implementation = "npu"
         
         self.num_codebooks = config.num_codebooks
         if self.num_codebooks is not None and self.num_codebooks > 1:

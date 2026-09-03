@@ -6,6 +6,10 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+try:
+    import torch_npu
+except ImportError:
+    torch_npu = None
 from torch.utils.checkpoint import checkpoint
 from timm.layers import Mlp
 from timm.models.vision_transformer import Block
@@ -156,11 +160,30 @@ class CausalAttention(nn.Module):
                 self.v_cache = torch.cat([self.v_cache, v], dim=2)
                 k, v = self.k_cache, self.v_cache
 
-        x = F.scaled_dot_product_attention(
-            q, k, v,
-            attn_mask=attn_mask,
-            dropout_p=self.attn_drop.p if self.training else 0.,
-        )
+        if q.device.type == "npu" and attn_mask is not None:
+            if attn_mask.dtype == torch.bool:
+                atten_mask_npu = torch.logical_not(attn_mask.bool())
+            else:
+                atten_mask_npu = attn_mask.bool()
+            head_num = q.shape[1]
+            dropout_p = self.attn_drop.p if self.training else 0.
+            x = torch_npu.npu_fusion_attention(
+                q, k, v,
+                head_num,
+                input_layout="BNSD",
+                pse=None,
+                atten_mask=atten_mask_npu,
+                scale=1.0 / math.sqrt(q.shape[-1]),
+                pre_tockens=2147483647,
+                next_tockens=2147483647,
+                keep_prob=1 - dropout_p,
+            )[0]
+        else:
+            x = F.scaled_dot_product_attention(
+                q, k, v,
+                attn_mask=attn_mask,
+                dropout_p=self.attn_drop.p if self.training else 0.,
+            )
         x = x.transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
