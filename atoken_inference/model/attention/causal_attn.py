@@ -14,6 +14,8 @@ if ATTN == "xformers":
     from xformers.ops.fmha.attn_bias import BlockDiagonalCausalMask
 elif ATTN == "flash_attn":
     import flash_attn
+elif ATTN == "npu":
+    import torch_npu
 else:
     raise ValueError(f"Unknown attention module: {ATTN}")
 
@@ -322,6 +324,9 @@ def sparse_scaled_dot_product_attention(*args, temporal_causal=False, **kwargs):
             reverse_indices = torch.argsort(reorder_indices)
             out = out[reverse_indices]
 
+        elif ATTN == "npu":
+            raise NotImplementedError("npu attention not yet implemented for causal_attn")
+
     else:
         # Original non-temporal-causal path
         if ATTN == "xformers":
@@ -377,6 +382,8 @@ def sparse_scaled_dot_product_attention(*args, temporal_causal=False, **kwargs):
                     max(kv_seqlen),
                     softcap=30.0,
                 )
+        elif ATTN == "npu":
+            raise NotImplementedError("npu attention not yet implemented for causal_attn")
         else:
             raise ValueError(f"Unknown attention module: {ATTN}")
 

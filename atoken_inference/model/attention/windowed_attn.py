@@ -14,6 +14,8 @@ if ATTN == "xformers":
     import xformers.ops as xops
 elif ATTN == "flash_attn":
     import flash_attn
+elif ATTN == "npu":
+    import torch_npu
 else:
     raise ValueError(f"Unknown attention module: {ATTN}")
 
@@ -151,6 +153,8 @@ def sparse_windowed_scaled_dot_product_self_attention(
             out = xops.memory_efficient_attention(q, k, v)  # [B, N, H, C]
         elif ATTN == "flash_attn":
             out = flash_attn.flash_attn_qkvpacked_func(qkv_feats)  # [B, N, H, C]
+        elif ATTN == "npu":
+            raise NotImplementedError("npu attention not yet implemented for windowed_attn")
         else:
             raise ValueError(f"Unknown attention module: {ATTN}")
         out = out.reshape(B * N, H, C)  # [M, H, C]
@@ -174,6 +178,8 @@ def sparse_windowed_scaled_dot_product_self_attention(
             out = flash_attn.flash_attn_varlen_qkvpacked_func(
                 qkv_feats, cu_seqlens, max(seq_lens), softcap=30.0
             )  # [M, H, C]
+        elif ATTN == "npu":
+            raise NotImplementedError("npu attention not yet implemented for windowed_attn")
 
     out = out[bwd_indices]  # [T, H, C]
 

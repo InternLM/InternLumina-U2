@@ -13,6 +13,8 @@ if ATTN == "xformers":
     import xformers.ops as xops
 elif ATTN == "flash_attn":
     import flash_attn
+elif ATTN == "npu":
+    import torch_npu
 else:
     raise ValueError(f"Unknown attention module: {ATTN}")
 
@@ -205,6 +207,26 @@ def sparse_scaled_dot_product_attention(*args, **kwargs):
                 max(q_seqlen),
                 max(kv_seqlen),
             )
+    elif ATTN == "npu":
+        if num_all_args == 1:
+            q, k, v = qkv.unbind(dim=1)
+            head_num = qkv.shape[2]
+        elif num_all_args == 2:
+            k, v = kv.unbind(dim=1)
+            head_num = q.shape[1]
+        elif num_all_args == 3:
+            head_num = q.shape[1]
+        scale = q.shape[-1] ** -0.5
+        out = torch_npu.npu_fusion_attention(
+            q,
+            k,
+            v,
+            head_num,
+            "TND",
+            scale=scale,
+            actual_seq_qlen=q_seqlen,
+            actual_seq_kvlen=kv_seqlen,
+        )[0]
     else:
         raise ValueError(f"Unknown attention module: {ATTN}")
 

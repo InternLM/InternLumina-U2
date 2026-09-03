@@ -31,7 +31,7 @@ def __from_env():
     # BACKEND = env_sparse_backend
     if env_sparse_debug is not None:
         DEBUG = env_sparse_debug == "1"
-    if env_sparse_attn is not None and env_sparse_attn in ["xformers", "flash_attn"]:
+    if env_sparse_attn is not None and env_sparse_attn in ["xformers", "flash_attn", "npu"]:
         ATTN = env_sparse_attn
 
     # print(f"[SPARSE] Backend: {BACKEND}, Attention: {ATTN}")
@@ -39,6 +39,15 @@ def __from_env():
 
 __from_env()
 
+# Default to the npu backend when running on Ascend.
+if ATTN == "flash_attn":
+    try:
+        import torch
+        import torch_npu
+        if torch.npu.is_available():
+            ATTN = "npu"
+    except ImportError:
+        pass
 
 # def set_backend(backend: Literal["spconv", "torchsparse"]):
 #     global BACKEND
@@ -50,7 +59,7 @@ def set_debug(debug: bool):
     DEBUG = debug
 
 
-def set_attn(attn: Literal["xformers", "flash_attn"]):
+def set_attn(attn: Literal["xformers", "flash_attn", "npu"]):
     global ATTN
     ATTN = attn
 
