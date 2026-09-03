@@ -17,6 +17,10 @@ import hashlib
 import argparse
 import time
 import torch
+try:
+    from torch_npu.contrib import transfer_to_npu
+except ImportError:
+    pass
 import numpy as np
 from transformers import AutoTokenizer
 from PIL import Image
