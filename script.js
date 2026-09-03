@@ -1,7 +1,7 @@
 const editingExamples = [
   {
-    id: 'soft-scarf', sourceAlt: 'Portrait before adding a scarf', resultAlt: 'Portrait with a soft flowing scarf',
-    title: 'Add a soft scarf', instruction: 'Add a soft, flowing scarf around her neck.'
+    id: 'rotate-orange-squares', sourceAlt: 'Pattern with orange squares before rotation', resultAlt: 'Pattern with orange squares rotated 45 degrees',
+    title: 'Rotate the squares', instruction: 'Rotate the orange squares 45 degrees.'
   },
   {
     id: 'futuristic-skyline', sourceAlt: 'Black vessel at dusk', resultAlt: 'Vessel with a futuristic city skyline',
@@ -38,6 +38,10 @@ const editingExamples = [
   {
     id: 'sunset-highway', sourceAlt: 'Highway under an overcast sky', resultAlt: 'Highway under a glowing sunset sky',
     title: 'Add a glowing sunset', instruction: 'Transform the overcast sky into a vibrant, glowing sunset.'
+  },
+  {
+    id: 'soft-scarf', sourceAlt: 'Portrait before adding a scarf', resultAlt: 'Portrait with a soft flowing scarf',
+    title: 'Add a soft scarf', instruction: 'Add a soft, flowing scarf around her neck.'
   }
 ];
 
