@@ -4,7 +4,7 @@
 
 *Shanghai AI Laboratory*
 
-[[📑 Technical Report (Coming Soon)](#)] &emsp; [[🌐 Project Page](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 Model (Coming Soon)](https://huggingface.co/internlm/InternLumina-U2)]
+[[📑 Technical Report (Coming Soon)](#)] &emsp; [[🌐 Project Page](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 Model](https://huggingface.co/internlm/InternLumina-U2)]
 
 [English](./README.md) | [简体中文](./README_zh-CN.md)
 
@@ -14,6 +14,7 @@
 
 ## 📰 News
 
+- **[2026-09]** 🏋️ We release the Ascend-trained model weights on Hugging Face — see [Model Weights](#-model-weights).
 - **[2026-08]** 🚀 We release the inference code (this repository). Model weights, the training code and the tech report are coming soon — see the [Roadmap](#roadmap).
 
 ## 🌟 Introduction
@@ -66,7 +67,7 @@ Intern Lumina U2 surpasses unified models such as InternVL-U, LLaDA2.0-Uni, Show
 
 ## 📦 Release Scope
 
-> **This repository contains the inference code only.** Model weights and the training code (a separate repository), the Ascend stack and the tech report will be released subsequently — see the [Roadmap](#roadmap).
+> **This repository contains the inference code only.** The Ascend-trained checkpoint is available now (see [Model Weights](#-model-weights)); the NVIDIA-trained checkpoint, the training code (a separate repository), and the tech report will be released subsequently — see the [Roadmap](#roadmap).
 
 ## 🛠️ Installation
 
@@ -109,9 +110,25 @@ Notes:
 
 Ascend NPU support lives on the [`ascend-npu-support`](https://github.com/InternLM/InternLumina-U2/tree/ascend-npu-support) branch rather than on `main`. It runs the LLM backbone on the `torch_npu` fused attention kernel and routes fused MoE through the NPU grouped matmul, so it needs CANN and a matching `torch_npu` build in place of the CUDA toolchain and `flash-attn` above.
 
+## 📥 Model Weights
+
+Weights are hosted on Hugging Face: [internlm/InternLumina-U2](https://huggingface.co/internlm/InternLumina-U2). The repo holds checkpoints of the same architecture trained on two different hardware stacks, each in its own subfolder — download whichever matches how you plan to run inference.
+
+```bash
+pip install -U "huggingface_hub[cli]"
+
+# Ascend NPU-trained checkpoint
+huggingface-cli download internlm/InternLumina-U2 --include "ascend/*" --local-dir ckpt/ascend
+
+# NVIDIA GPU-trained checkpoint (coming soon)
+huggingface-cli download internlm/InternLumina-U2 --include "nvidia/*" --local-dir ckpt/nvidia
+```
+
+Each subfolder is a ready-to-use **split** HF checkpoint (`config.json` + safetensors + `configuration_internluminau2.py` / `modeling_internluminau2.py` / `tokenbridge.py` / `parallel_plan.py`), directly usable as `CHECKPOINT` below.
+
 ## 🎨 Inference
 
-All inference goes through one driver (`infer_1024_sft.sh`) with one section per task. It expects a **split** HF checkpoint directory (`.../hf_ckpt_split`; weights to be released, see Roadmap), and — for anything that encodes or decodes images — the AToken tokenizer weights at `atoken_inference/checkpoints/atoken-sod.pt` (or `ATOKEN_MODEL_PATH=...`). The model asset directory must keep `config.json`, `configuration_internluminau2.py`, `modeling_internluminau2.py`, and `tokenbridge.py` together when using Transformers `AutoModel*`. The system prompt is part of the checkpoint's training contract: for strict reproduction, override the corresponding `*_SYSTEM_PROMPT` variable with the exact prompt used to train that checkpoint. Existing outputs are overwritten by default; pass `--skip_existing` to a Python entrypoint only when the full request is unchanged.
+All inference goes through one driver (`infer_1024_sft.sh`) with one section per task. It expects a **split** HF checkpoint directory (e.g. `ckpt/ascend` from [Model Weights](#-model-weights) above), and — for anything that encodes or decodes images — the AToken tokenizer weights at `atoken_inference/checkpoints/atoken-sod.pt` (or `ATOKEN_MODEL_PATH=...`). The model asset directory must keep `config.json`, `configuration_internluminau2.py`, `modeling_internluminau2.py`, and `tokenbridge.py` together when using Transformers `AutoModel*`. The system prompt is part of the checkpoint's training contract: for strict reproduction, override the corresponding `*_SYSTEM_PROMPT` variable with the exact prompt used to train that checkpoint. Existing outputs are overwritten by default; pass `--skip_existing` to a Python entrypoint only when the full request is unchanged.
 
 The underlying Python entrypoints (`infer_t2i_sft.py`, `infer_mmu_sft.py`, `infer_video_sft.py`, `infer_3d_sft.py`) can also be called directly; run any of them with `--help`. The model's low-level `generate` is a block-diffusion API, so use these task entrypoints instead of the standard Transformers `generate(max_length=...)` interface.
 
@@ -119,7 +136,7 @@ The underlying Python entrypoints (`infer_t2i_sft.py`, `infer_mmu_sft.py`, `infe
 
 ```bash
 SECTION=text TEXT_PROMPT="Explain why the sky appears blue in a few sentences." \
-  CHECKPOINT=/path/to/hf_ckpt_split bash infer_1024_sft.sh
+  CHECKPOINT=ckpt/ascend bash infer_1024_sft.sh
 ```
 
 ### 2. Text-to-Image Generation
@@ -129,7 +146,7 @@ SECTION=text TEXT_PROMPT="Explain why the sky appears blue in a few sentences." 
 ```bash
 SECTION=t2i T2I_PROMPT="A serene mountain landscape with towering snow-capped peaks, a crystal-clear blue lake reflecting the mountains, dense pine forests, and a vibrant orange sunrise illuminating the sky." \
   T2I_SIZE=1024x1024 T2I_CFG=3.0 T2I_TIMESTEPS=96 \
-  CHECKPOINT=/path/to/hf_ckpt_split bash infer_1024_sft.sh
+  CHECKPOINT=ckpt/ascend bash infer_1024_sft.sh
 ```
 
 ### 3. Image Understanding
@@ -215,7 +232,7 @@ For 3D assets the equivalent offline encoder is `atoken_inference/glb_encode/enc
 ## 🗺️ Roadmap
 
 - [x] Inference code for T2I / editing / image, video and 3D understanding
-- [ ] Model weights
+- [x] Model weights (Ascend); NVIDIA checkpoint coming soon
 - [ ] Training code 
 - [x] Ascend NPU training & inference stack
 - [ ] Tech report
