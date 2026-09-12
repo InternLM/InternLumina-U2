@@ -67,7 +67,7 @@ Intern Lumina U2 surpasses unified models such as InternVL-U, LLaDA2.0-Uni, Show
 
 ## 📦 Release Scope
 
-> **This repository contains the inference code only.** The Ascend-trained checkpoint is available now (see [Model Weights](#-model-weights)); the NVIDIA-trained checkpoint, the training code (a separate repository), and the tech report will be released subsequently — see the [Roadmap](#roadmap).
+> **This repository contains the inference code only.** The Ascend-trained checkpoint is available now (see [Model Weights](#-model-weights)); the NVIDIA-trained checkpoint, the training code, and the tech report will be released subsequently — see the [Roadmap](#roadmap).
 
 ## 🛠️ Installation
 
