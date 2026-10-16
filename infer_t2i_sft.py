@@ -24,8 +24,14 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+from utils.media_layout import (
+    as_2d as _as_2d,
+    add_break_line_multi_codebook,
+    make_special_2d,
+)
 from utils.generation_utils import setup_seed
 from utils.tokenizer_contract import validate_tokenizer_contract
+from generators.accel_presets import ACCEL_PRESET_NAMES, resolve_accel_preset
 from generators.image_generation_generator import generate_image_ar
 from generators.text_understanding_generator import load_inference_model
 from utils.media_token_io import load_image_tokens_from_rclone
@@ -115,22 +121,6 @@ def concat_images_grid(images, cols=4, spacing=0):
     return grid_image
 
 
-def add_break_line_multi_codebook(tokens: torch.Tensor, H: int, W: int, new_number: int = 0) -> torch.Tensor:
-    """Append one structural token after each row of an H x W VQ grid.
-
-    Input and output are [sequence, num_codebooks]. The output length is
-    H * (W + 1); the extra H entries are removed before AToken decoding and
-    therefore are not image pixels.
-    """
-    if tokens.dim() != 2:
-        raise ValueError(f"Expected tokens shape [seq_len, num_codebooks], got {tokens.shape}")
-    seq_len, num_codebooks = tokens.shape
-    if seq_len != H * W:
-        raise ValueError(f"Token length {seq_len} does not match image size {H}x{W}")
-    tokens = tokens.view(H, W, num_codebooks)
-    pad_row = torch.full((H, 1, num_codebooks), fill_value=new_number, dtype=tokens.dtype, device=tokens.device)
-    tokens = torch.cat([tokens, pad_row], dim=1)
-    return tokens.view(-1, num_codebooks)
 
 
 def calculate_vq_params(image_height: int, image_width: int, vae_scale: int = 16):
@@ -160,19 +150,8 @@ def prepare_image_for_encode(img: Image.Image, max_edge: int = 0) -> Image.Image
     return img
 
 
-def _as_2d(token_ids, device='cuda'):
-    """Expand text/special ids to the same 8-column shape as image tokens.
-
-    Text has one semantic token id. Repeating it here only satisfies the shared
-    storage layout; type 1 and type 3 still use the model's text embedding
-    path rather than eight independent image codebooks.
-    """
-    t = torch.tensor(token_ids, dtype=torch.int64, device=device)
-    return t.unsqueeze(1).repeat(1, NUM_CODEBOOKS)
 
 
-def make_special_2d(token_id: int, device='cuda') -> torch.Tensor:
-    return torch.full((1, NUM_CODEBOOKS), token_id, dtype=torch.long, device=device)
 
 
 def build_sft_user_prefix(tokenizer, system_prompt, user_text, media_token_list=None, device='cuda'):
@@ -364,6 +343,43 @@ def load_input_media_list(input_token_paths, input_image_paths, wrapper, input_m
     return input_media_list
 
 
+def parse_accel_overrides(items, preset):
+    """Turn repeated ``KEY=VALUE`` strings into kwargs for ``generate_image_ar``.
+
+    Values are coerced to the type the preset already uses for that key, so a
+    knob declared as an int stays an int. Unknown keys are rejected here with the
+    list of valid ones; the generator validates again, but failing at the CLI
+    gives a far better message than failing six frames deep.
+    """
+    known = resolve_accel_preset(preset)
+    out = {}
+    for item in items or []:
+        if "=" not in item:
+            raise SystemExit(f"--accel_set expects KEY=VALUE, got {item!r}")
+        key, _, raw = item.partition("=")
+        key, raw = key.strip(), raw.strip()
+        if key not in known:
+            raise SystemExit(
+                f"--accel_set: unknown knob {key!r} for preset {preset!r}. "
+                f"Tunable: {', '.join(sorted(known))}"
+            )
+        current = known[key]
+        try:
+            if isinstance(current, bool):
+                if raw.lower() not in ("0", "1", "true", "false"):
+                    raise ValueError(raw)
+                out[key] = raw.lower() in ("1", "true")
+            elif isinstance(current, int):
+                out[key] = int(raw)
+            else:
+                out[key] = float(raw)
+        except ValueError:
+            raise SystemExit(
+                f"--accel_set: cannot read {raw!r} as {type(current).__name__} for {key!r}"
+            ) from None
+    return out
+
+
 def generate_single_image_sft(
     model,
     tokenizer,
@@ -381,12 +397,18 @@ def generate_single_image_sft(
     seed,
     cfg_text=None,
     cfg_img=None,
+    accel_preset="off",
+    accel_overrides=None,
 ):
     """Run one complete SFT image inference request.
 
     timesteps, cfg_scale and temperature control image decoding.
     Edit requests may instead provide cfg_text and cfg_img together to enable
     inference-only dual-CFG.
+    accel_preset selects a training-free decode acceleration; see
+    generators/accel_presets.py. Edit requests using dual-CFG fall back to the
+    reference decode loop (with a warning) because the packed-CFG tiers assume
+    the simple-CFG layout.
 
     Returns (PIL image, image-stage time).
     """
@@ -525,6 +547,9 @@ def generate_single_image_sft(
         uncon_user_prefix_len=uncon_user_prefix_len,
         uncon_media_region_start=uncon_media_region_start,
         generator=generator,
+        accel_preset=accel_preset,
+        grid_hw=(token_grid_height, token_grid_width),
+        **(accel_overrides or {}),
     )
 
     # Output is [1, H*W, 8] with NEW_LINE positions already removed. AToken
@@ -626,6 +651,7 @@ def build_t2i_grid_paths(args, prompts) -> list:
 
 
 def run_t2i_grid(args, model, tokenizer, wrapper, device, prompts):
+    accel_overrides = parse_accel_overrides(args.accel_set, args.accel_preset)
     want_fixed = args.seed_mode in ("fixed", "both")
     want_hash = args.seed_mode in ("hash", "both")
     images_fixed = []
@@ -649,6 +675,8 @@ def run_t2i_grid(args, model, tokenizer, wrapper, device, prompts):
             cfg_scale=args.cfg_scale,
             temperature=args.temperature,
             seed=args.seed,
+            accel_preset=args.accel_preset,
+            accel_overrides=accel_overrides,
         )
         images_fixed.append(img)
         img.save(single_path)
@@ -692,6 +720,8 @@ def run_t2i_grid(args, model, tokenizer, wrapper, device, prompts):
             cfg_scale=args.cfg_scale,
             temperature=args.temperature,
             seed=hash_seed,
+            accel_preset=args.accel_preset,
+            accel_overrides=accel_overrides,
         )
         images_hash.append(img)
         img.save(single_path)
@@ -734,6 +764,23 @@ def main():
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument("--seed", type=int, default=65513)
     parser.add_argument(
+        "--accel_preset", type=str, default="off", choices=list(ACCEL_PRESET_NAMES),
+        help="Training-free decode acceleration (t2i only; editing uses dual-CFG, "
+             "which the packed path cannot take, and falls back). 'off' enables "
+             "nothing and reproduces the released output; 'cache' keeps the round "
+             "count but is equivalent only up to bf16 rounding, so a seed will not "
+             "reproduce an earlier image; 'fast'/'quality' also shorten the "
+             "schedule. See generators/accel_presets.py.",
+    )
+    parser.add_argument(
+        "--accel_set", action="append", default=[], metavar="KEY=VALUE",
+        help="Override one acceleration knob on top of --accel_preset; repeatable. "
+             "Tunable keys are whatever the chosen preset defines, e.g. for 'fast': "
+             f"{', '.join(sorted(resolve_accel_preset('fast')))}. "
+             "An unknown key is rejected rather than ignored. Example: "
+             "--accel_set plateau_delta=0.17 --accel_set plateau_floor=0.010",
+    )
+    parser.add_argument(
         "--seed_mode", type=str, default="fixed", choices=["fixed", "hash", "both"],
         help="--prompt_file only. fixed uses --seed for every prompt; hash derives a "
              "deterministic seed per prompt; both renders both variants.",
@@ -764,6 +811,8 @@ def main():
     if args.timesteps is None:
         args.timesteps = DEFAULT_TIMESTEPS[args.task_type]
     validate_cfg_args(parser, args)
+    # Parsed once here so an unknown knob fails before the model is loaded.
+    accel_overrides = parse_accel_overrides(args.accel_set, args.accel_preset)
 
     input_count = len(args.input_token_paths) + len(args.input_image_paths)
     if args.task_type == "single_edit" and input_count != 1:
@@ -935,6 +984,8 @@ def main():
                 seed=args.seed,
                 cfg_text=args.cfg_text,
                 cfg_img=args.cfg_img,
+                accel_preset=args.accel_preset,
+                accel_overrides=accel_overrides,
             )
             img.save(save_path)
             print(f"[Done] Saved {save_path} (Time: {elapsed_time:.2f}s)")
@@ -964,6 +1015,8 @@ def main():
         seed=args.seed,
         cfg_text=args.cfg_text,
         cfg_img=args.cfg_img,
+        accel_preset=args.accel_preset,
+        accel_overrides=accel_overrides,
     )
 
     save_path = build_t2i_output_path(args)

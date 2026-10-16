@@ -4,15 +4,37 @@
 # Python entrypoints validate the tokenizer's special-token IDs before inference.
 #
 # Usage:
-#   CHECKPOINT=/path/to/sft/checkpoints/e0-XXXX/hf_ckpt_split bash infer_1024_sft.sh
+#   CHECKPOINT=/path/to/hf_ckpt_split bash infer_1024_sft.sh
 #   SECTION=t2i T2I_PROMPT="..." CHECKPOINT=... bash infer_1024_sft.sh
 # Sections: t2i(default) text under under_ut edit video 3d
+#
+# Acceleration (optional, the t2i section only): ACCEL=off|cache|fast|quality.
+# off is the default and enables nothing. Override individual knobs with
+# ACCEL_SET="k=v,k=v". See generators/accel_presets.py.
+# Editing, text and the understanding tasks have no acceleration in this release.
 #
 # The T2I / image sections additionally need the AToken tokenizer weights:
 #   ATOKEN_MODEL_PATH=/path/to/atoken-sod.pt (default: atoken_inference/checkpoints/atoken-sod.pt)
 set -euo pipefail
 
 SECTION="${SECTION:-t2i}"
+ACCEL="${ACCEL:-off}"
+case "${ACCEL}" in
+  off|cache|fast|quality) ;;
+  *)
+    echo "ERROR: unsupported ACCEL=${ACCEL}; choose off, cache, fast, or quality" >&2
+    exit 2
+    ;;
+esac
+# Optional per-knob overrides on top of ACCEL, comma-separated: ACCEL_SET="k=v,k=v".
+ACCEL_SET_ARGS=()
+if [[ -n "${ACCEL_SET:-}" ]]; then
+  IFS=',' read -r -a _accel_kvs <<< "${ACCEL_SET}"
+  for _kv in "${_accel_kvs[@]}"; do
+    _kv="${_kv#"${_kv%%[![:space:]]*}"}"   # trim leading space
+    [[ -n "${_kv}" ]] && ACCEL_SET_ARGS+=(--accel_set "${_kv}")
+  done
+fi
 case "${SECTION}" in
   all|text|t2i|edit|under|under_ut|video|3d) ;;
   *)
@@ -54,6 +76,9 @@ if [[ -z "${CHECKPOINT:-}" ]]; then
 fi
 SEED="${SEED:-65513}"
 OUTPUT_BASE="${OUTPUT_BASE:-$(dirname "${CHECKPOINT%/}")/output_sft_infer}"
+# Tag the output dir with the preset: different tiers produce different images,
+# and --skip_existing must never reuse one tier's result for another.
+if [[ "${ACCEL}" != "off" ]]; then OUTPUT_BASE="${OUTPUT_BASE}_accel-${ACCEL}"; fi
 mkdir -p "${OUTPUT_BASE}"
 
 DEFAULT_TEXT_SYSTEM_PROMPT="You are a helpful assistant."
@@ -100,6 +125,7 @@ if run t2i; then
   echo "=== t2i ${H}x${W} cfg${T2I_CFG} temp${T2I_TEMP} seed${SEED} ==="
   infer_torchrun "${ROOT}/infer_t2i_sft.py" \
     --checkpoint "${CHECKPOINT}" --task_type t2i \
+    --accel_preset "${ACCEL}" "${ACCEL_SET_ARGS[@]}" \
     --system_prompt "${T2I_SYSTEM_PROMPT}" \
     --user_text "${T2I_RUN_PROMPT}" \
     --image_height "${H}" --image_width "${W}" --timesteps "${T2I_TIMESTEPS:-96}" \

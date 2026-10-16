@@ -13,6 +13,7 @@
 # limitations under the License.
 
 
+import os
 from typing import TYPE_CHECKING, Callable, List, Optional, Union
 
 from torch.utils.data import IterableDataset
@@ -71,6 +72,7 @@ def build_dataloader(
     pin_memory: bool = True,
     prefetch_factor: int = 2,
     seed: int = 0,
+    multiprocessing_context: Optional[str] = None,
 ) -> "DistributedDataloader":
     parallel_state = get_parallel_state()
     token_micro_bsz = micro_batch_size * max_seq_len
@@ -126,16 +128,26 @@ def build_dataloader(
             seed=seed,
         )
 
-    dataloader = DistributedDataloader(
-        dataset,
+    # fork is safe: h5py handles and petrel clients are re-created per PID in the datasets.
+    # It is also much cheaper than spawn here, since workers inherit the (slow) dataset init
+    # instead of redoing it. Set DATALOADER_MP_CONTEXT=spawn/forkserver to fall back.
+    if multiprocessing_context is None and num_workers > 0:
+        multiprocessing_context = os.environ.get("DATALOADER_MP_CONTEXT", "fork") or None
+
+    dataloader_kwargs = dict(
         batch_size=dataloader_batch_size,
         sampler=sampler,
         num_workers=num_workers,
         collate_fn=collate_fn,
         pin_memory=pin_memory,
         drop_last=drop_last,
-        prefetch_factor=prefetch_factor,
     )
+    if num_workers > 0:
+        dataloader_kwargs["prefetch_factor"] = prefetch_factor
+        dataloader_kwargs["persistent_workers"] = True
+        dataloader_kwargs["multiprocessing_context"] = multiprocessing_context
+
+    dataloader = DistributedDataloader(dataset, **dataloader_kwargs)
     if use_rmpad:
         dataloader = DynamicBatchSizeDataLoader(
             dataloader,

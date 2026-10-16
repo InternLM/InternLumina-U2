@@ -294,8 +294,8 @@ class DistributedCheckpointer(CheckpointerBase):
     """
 
     dcp_save_future: Optional[Any] = None
-    # Dedicated process group for async saves (created on first use)
-    _async_process_group: Optional[Any] = None
+    # Dedicated Gloo process group for DCP save collectives (created on first use)
+    _save_process_group: Optional[Any] = None
 
     @classmethod
     def save(
@@ -336,11 +336,10 @@ class DistributedCheckpointer(CheckpointerBase):
         if "optimizer" in state:
             save_state["optimizer"] = OptimizerState(model=state["model"], optimizer=state["optimizer"])  # type: ignore[index]
 
-        if save_async:
-            # Lazily create a dedicated Gloo process group for async DCP saves
-            if cls._async_process_group is None:
-                cls._async_process_group = dist.new_group(backend="gloo")
+        if cls._save_process_group is None:
+            cls._save_process_group = dist.new_group(backend="gloo")
 
+        if save_async:
             if cls.dcp_save_future is not None:
                 logger.info(f"[RANK {dist.get_rank()}] waiting for previous DCP saving session to end...")
                 cls.dcp_save_future.result()
@@ -354,9 +353,9 @@ class DistributedCheckpointer(CheckpointerBase):
                     checkpoint_dir,
                     thread_count=16,
                     single_file_per_rank=True,
-                    sync_files=False,
+                    sync_files=True,
                 ),
-                process_group=cls._async_process_group,
+                process_group=cls._save_process_group,
             )
         else:
             dcp.save(
@@ -365,8 +364,9 @@ class DistributedCheckpointer(CheckpointerBase):
                     checkpoint_dir,
                     thread_count=16,
                     single_file_per_rank=True,
-                    sync_files=False,
+                    sync_files=True,
                 ),
+                process_group=cls._save_process_group,
             )
 
         logger.info_rank0(f"Saved checkpoint to {checkpoint_dir}")

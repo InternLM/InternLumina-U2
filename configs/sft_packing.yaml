@@ -1,0 +1,98 @@
+# Multitask SFT config, paired with
+# tasks/train_sft.py, which builds the
+# xllmx_sft_multitask dataset from xllmx_dataset_sft_multitask_blkpad:
+#   - text mask id 156895 (<|mask|>) instead of 157147 (<|reserved_token_252|>)
+#   - terminal answer turns pad the final block with real EOA BEFORE masking, so the
+#     pad is supervised with EOA (teaches termination); t2i_think uses maskable repeated
+#     </think> padding with total artificial-tail loss weight capped at one token
+#   - per-block cosine noise (3% fully-masked blocks)
+# This matches the BD *pretrain* objective, so SFT can continue from a pretrain
+# checkpoint. Point load_model_path at a BD-pretrain HF checkpoint (mask 156895).
+model:
+  # MUST be the packed-expert config: with the inference config the MoE experts
+  # are built as a per-expert ModuleList and the packed weights in hf_ckpt match
+  # nothing, leaving every expert at its random init. See that dir's README.
+  config_path: configs/model_configs/internluminau2_packed/
+  # Fill the three paths below with the released base checkpoint dir
+  # (contains config.json, tokenizer files and safetensors shards).
+  model_path: ./ckpt/llada2_base
+  starting_point_path: ./ckpt/llada2_base
+  tokenizer_path: ./ckpt/llada2_base
+  attn_implementation: sdpa
+  moe_implementation: fused
+  # load_model_path: ### fill with a BD-pretrain HF checkpoint (e.g. .../hf_ckpt or hf_ckpt_merged)
+
+data:
+  train_path: data/example_sft.yaml
+  train_size: 100000000000
+  data_type: conversation
+  datasets_type: xllmx_sft_multitask
+  enable_multisource: false
+  dataloader_type: native
+  max_seq_len: 38912
+  dyn_pack_max_seq_len: 38912
+  text_keys: messages
+  noise_range_low: 0.3
+  noise_range_high: 0.8
+  num_workers: 8
+  vocab_size: 157184
+  num_codebooks: 8
+  text_block_length: 32
+  t2i_think_uncondition_mode: no_t2i_think_drop
+  max_text_length: 2048
+  cache_ann_on_disk: true
+
+train:
+  output_dir: ./llada2_mini_bd_sft_multitask_v1
+  data_parallel_mode: fsdp2
+  tensor_parallel_size: 1
+  expert_parallel_size: 1
+  global_batch_size: 128
+  micro_batch_size: 1
+  num_train_epochs: 1
+  rmpad_with_pos_ids: false
+  rmpad: true
+  bsz_warmup_ratio: 0.001
+  dyn_bsz_margin: 0
+  dyn_bsz_buffer_size: 400
+  optimizer: adamw
+  beta1: 0.9
+  beta2: 0.999
+  lr: 1.0e-5
+  lr_warmup_ratio: 0.001
+  lr_decay_style: constant
+  lr_decay_ratio: 1.0
+  weight_decay: 0.1
+  no_decay_modules:
+    - LLaDA2MoeRMSNorm
+    - LigerRMSNorm
+    - LayerNorm
+  no_decay_params:
+    - bias
+  image_loss_weight: 1.0
+  max_grad_norm: 1.0
+  enable_mixed_precision: true
+  enable_gradient_checkpointing: true
+  enable_full_shard: true
+  enable_fsdp_offload: false
+  enable_activation_offload: false
+  init_device: meta
+  broadcast_model_weights_from_rank0: true
+  enable_full_determinism: false
+  empty_cache_steps: 100
+  ckpt_manager: dcp
+  load_checkpoint_path: ""
+  use_same_datasets: true
+  resume_use_new_lr: false
+  resume_reset_lr_schedule: false
+  save_epochs: 1
+  save_steps: 500
+  save_hf_weights: true
+  block_diffusion_mode: false
+  block_size: 8
+  same_token_labels: true
+  use_wandb: false
+  prepare_model: false
+  moe_balance_loss_weight: 0.001
+  ckpt_max_keep: 2
+  enable_batch_dump: false

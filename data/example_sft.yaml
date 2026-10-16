@@ -1,0 +1,10 @@
+# Example SFT data manifest. Each META entry points at a .jsonl annotation file;
+# see data/examples/example_sft.jsonl for the record schema and README "Data format"
+# for the full field reference. `ratio` optionally up/down-samples an entry.
+#
+# NOTE: the token_path fields in example_sft.jsonl are PLACEHOLDERS -- it
+# documents the schema, it is not runnable. For a dataset that actually runs:
+#     python tools/make_example_data.py --output_dir data/example_run
+#     SFT_TRAIN_PATH=data/example_run/train.yaml bash train_sft.sh
+META:
+  - path: 'data/examples/example_sft.jsonl'

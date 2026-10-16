@@ -21,6 +21,7 @@ torchdata==0.11.0
 blobfile==3.1.0
 psutil==7.1.3
 packaging==25.0
+h5py==3.12.1          # training: on-disk annotation cache (cache_ann_on_disk)
 
 # NOTE: flash-attn is required by the AToken visual tokenizer but must be
 # installed AFTER torch (see README step 3):
@@ -43,6 +44,9 @@ webdataset==1.0.2
 # -- 3D understanding -----------------------------------------------------
 # Required by the bundled GLB/GLTF encoder and the mesh surface-sampling fallback.
 trimesh==5.0.0
+utils3d               # imported by the bundled multiview / Gaussian-splat helpers
+                      # (unpinned: not part of our tested pin set, but the 3D
+                      #  encoding path imports it and it was previously undeclared)
 # Optional: Gaussian-splat/point-cloud extensions for advanced external assets.
 # plyfile==1.1.3
 # diff-gaussian-rasterization  # install from source: https://github.com/graphdeco-inria/diff-gaussian-rasterization

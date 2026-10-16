@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 import torch
 import torch.nn as nn
@@ -230,24 +230,42 @@ def _should_build_ep_aware(model: "nn.Module", param_groups: Optional[Sequence[D
     return False
 
 
+def _resolve_param_lr(
+    param_name: str,
+    default_lr: float,
+    param_lr_overrides: Optional[Mapping[str, float]],
+) -> float:
+    if not param_lr_overrides or param_name not in param_lr_overrides:
+        return float(default_lr)
+    return float(param_lr_overrides[param_name])
+
+
 def _make_param_groups_for_subset(
     model: "nn.Module",
     params: Iterable[torch.nn.Parameter],
+    lr: float,
     weight_decay: float,
     no_decay_modules: Optional[List[str]] = None,
     no_decay_params: Optional[List[str]] = None,
+    param_lr_overrides: Optional[Mapping[str, float]] = None,
 ) -> List[Dict[str, Any]]:
     decay_param_names = set(get_parameter_names(model, no_decay_modules, no_decay_params))
     name_by_param = {p: n for n, p in model.named_parameters()}
-    params = [p for p in params if p.requires_grad]
-    decayed = [p for p in params if name_by_param.get(p) in decay_param_names]
-    undecayed = [p for p in params if name_by_param.get(p) not in decay_param_names]
-    groups: List[Dict[str, Any]] = []
-    if decayed:
-        groups.append({"params": decayed, "weight_decay": weight_decay})
-    if undecayed:
-        groups.append({"params": undecayed, "weight_decay": 0.0})
-    return groups
+    grouped_params: Dict[Tuple[float, float], List[torch.nn.Parameter]] = {}
+    for param in params:
+        if not param.requires_grad:
+            continue
+        param_name = name_by_param.get(param)
+        if param_name is None:
+            raise ValueError("Optimizer parameter is missing from model.named_parameters().")
+        group_lr = _resolve_param_lr(param_name, lr, param_lr_overrides)
+        group_weight_decay = weight_decay if param_name in decay_param_names else 0.0
+        grouped_params.setdefault((group_lr, group_weight_decay), []).append(param)
+
+    return [
+        {"params": group_params, "lr": group_lr, "weight_decay": group_weight_decay}
+        for (group_lr, group_weight_decay), group_params in grouped_params.items()
+    ]
 
 
 # adapted from https://github.com/huggingface/transformers/blob/v4.49.0/src/transformers/trainer_pt_utils.py#L1123
@@ -281,30 +299,60 @@ def build_optimizer(
     param_groups: Optional[Sequence[Dict[str, Any]]] = None,
     no_decay_modules: Optional[List[str]] = None,
     no_decay_params: Optional[List[str]] = None,
+    param_lr_overrides: Optional[Mapping[str, float]] = None,
 ) -> "torch.optim.Optimizer":
-    # EP-aware routing: for FSDP2+EP, split params into EP and non-EP groups and build two optimizers.
+    if param_groups is not None and param_lr_overrides:
+        raise ValueError("param_groups and param_lr_overrides cannot be used together.")
+
+    trainable_param_names = {name for name, param in model.named_parameters() if param.requires_grad}
+    for param_name, override_lr in (param_lr_overrides or {}).items():
+        if float(override_lr) <= 0:
+            raise ValueError(f"LR override for {param_name!r} must be positive, got {override_lr}.")
+        if param_name not in trainable_param_names:
+            raise ValueError(f"LR override parameter {param_name!r} is not trainable or does not exist.")
+        logger.info_rank0(f"Parameter {param_name!r} uses lr={float(override_lr):.6e}")
+
+    # EP-aware routing: split params into EP and non-EP groups before applying WD/LR policies.
     if _should_build_ep_aware(model, param_groups):
         return build_ep_fsdp2_optimizer(
-            model, lr, betas, eps, weight_decay, fused, optimizer_type, param_groups, no_decay_modules, no_decay_params
+            model,
+            lr,
+            betas,
+            eps,
+            weight_decay,
+            fused,
+            optimizer_type,
+            param_groups,
+            no_decay_modules,
+            no_decay_params,
+            param_lr_overrides,
         )
-    # Other cases remain the same
-    if param_groups is None:
-        decay_param_names = get_parameter_names(model, no_decay_modules, no_decay_params)
-        param_groups = [
-            {
-                "params": [p for n, p in model.named_parameters() if n in decay_param_names and p.requires_grad],
-                "weight_decay": weight_decay,
-            },
-        ]
-        no_decay_parameters, no_decay_parameter_names = [], []
-        for n, p in model.named_parameters():
-            if n not in decay_param_names and p.requires_grad:
-                no_decay_parameter_names.append(n)
-                no_decay_parameters.append(p)
 
-        if len(no_decay_parameters) > 0:
-            logger.info_rank0(f"Parameters without weight decay: {no_decay_parameter_names}")
-            param_groups.append({"params": no_decay_parameters, "weight_decay": 0.0})
+    if param_groups is None:
+        param_groups = _make_param_groups_for_subset(
+            model,
+            model.parameters(),
+            lr,
+            weight_decay,
+            no_decay_modules,
+            no_decay_params,
+            param_lr_overrides,
+        )
+        decay_param_names = set(get_parameter_names(model, no_decay_modules, no_decay_params))
+        no_decay_parameter_names = [
+            name for name, param in model.named_parameters() if param.requires_grad and name not in decay_param_names
+        ]
+        if no_decay_parameter_names:
+            logger.info_rank0(
+                f"Parameters without weight decay ({len(no_decay_parameter_names)}): {no_decay_parameter_names}"
+            )
+
+    for index, group in enumerate(param_groups):
+        logger.info_rank0(
+            f"Optimizer param group {index}: params={len(group['params'])}, "
+            f"lr={float(group.get('lr', lr)):.6e}, "
+            f"weight_decay={float(group.get('weight_decay', weight_decay)):.6g}"
+        )
 
     if optimizer_type == "adamw":
         foreach = not fused
@@ -329,6 +377,7 @@ def build_ep_fsdp2_optimizer(
     param_groups: Optional[Sequence[Dict[str, Any]]] = None,
     no_decay_modules: Optional[List[str]] = None,
     no_decay_params: Optional[List[str]] = None,
+    param_lr_overrides: Optional[Mapping[str, float]] = None,
 ):
     """
     Build a MultiOptimizer instance when model is parallelized with EP+FSDP2
@@ -348,9 +397,11 @@ def build_ep_fsdp2_optimizer(
 
     logger.info_rank0(f"EP-aware optimizer: {len(ep_params)} EP params, {len(non_ep_params)} non-EP params")
 
-    ep_groups = _make_param_groups_for_subset(model, ep_params, weight_decay, no_decay_modules, no_decay_params)
+    ep_groups = _make_param_groups_for_subset(
+        model, ep_params, lr, weight_decay, no_decay_modules, no_decay_params, param_lr_overrides
+    )
     non_ep_groups = _make_param_groups_for_subset(
-        model, non_ep_params, weight_decay, no_decay_modules, no_decay_params
+        model, non_ep_params, lr, weight_decay, no_decay_modules, no_decay_params, param_lr_overrides
     )
 
     def _build(groups: Sequence[Dict[str, Any]]) -> Optimizer:

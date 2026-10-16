@@ -451,6 +451,14 @@ class TrainingArguments:
         default=None,
         metadata={"help": "Path to checkpoint to resume from."},
     )
+    reload_model_checkpoint_path: Optional[str] = field(
+        default=None,
+        metadata={"help": "Path to reload model weights from (HF format) after loading optimizer from load_checkpoint_path."},
+    )
+    resume_override_global_step: Optional[int] = field(
+        default=None,
+        metadata={"help": "Override global_step to this value when resuming."},
+    )
     save_steps: int = field(
         default=0,
         metadata={"help": "Number of steps between two checkpoint saves."},
@@ -876,6 +884,10 @@ def parse_args(rootclass: T) -> T:
     for base, arg_dict in input_data.items():
         for arg_name, arg_value in arg_dict.items():
             if f"--{base}.{arg_name}=" not in cmd_args_string:  # lower priority
+                # YAML `null` must not become the CLI string "null" (json.dumps(None)),
+                # or Optional[str] fields incorrectly receive the literal word "null".
+                if arg_value is None:
+                    continue
                 cmd_args.append(f"--{base}.{arg_name}")
                 if isinstance(arg_value, str):
                     cmd_args.append(arg_value)

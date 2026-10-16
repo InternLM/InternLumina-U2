@@ -375,7 +375,7 @@ def generate_text_bd(
                     f"{name} length {int(t.shape[0])} != prefix_tokens length {pn}"
                 )
     if use_meta_mask and generated_turn_id is None:
-        generated_turn_id = int(prefix_turn_ids.max().item()) + 1 if prefix_turn_ids.numel() > 0 else 1 # 将generate的turn id
+        generated_turn_id = int(prefix_turn_ids.max().item()) + 1 if prefix_turn_ids.numel() > 0 else 1  # generated turn id = max prefix turn id + 1
     if generated_position_start is None:
         generated_position_start = int(prefix_tokens.shape[0])
 
@@ -414,11 +414,11 @@ def generate_text_bd(
             x = torch.cat([prefix_tokens, mask_block], dim=0)
 
         # Build type_ids
-        prev_len = sum(d.shape[0] for d in all_decoded) if all_decoded else 0 # 已经generate的文本token长度
+        prev_len = sum(d.shape[0] for d in all_decoded) if all_decoded else 0  # length of text tokens generated so far
         answer_part_type = torch.full(
             (prev_len + cur_block_len,), answer_type_id, dtype=torch.long, device=device
         )
-        type_ids = torch.cat([prefix_type_ids, answer_part_type], dim=0) # 构造answer部分的type（包括之前已经generate的文本和当前block的文本）
+        type_ids = torch.cat([prefix_type_ids, answer_part_type], dim=0)  # answer-part types, including what was already generated
 
         x = x.unsqueeze(0)  # (1, seq_len, codebooks)
         type_ids_batch = type_ids.unsqueeze(0)
@@ -428,16 +428,16 @@ def generate_text_bd(
         if use_meta_mask:
             prev_block_ids = torch.arange(prev_len, device=device, dtype=torch.long) // int(block_length)
             cur_block_ids = torch.full((cur_block_len,), blk_idx, dtype=torch.long, device=device)
-            block_ids = torch.cat([prefix_block_ids, prev_block_ids, cur_block_ids], dim=0) # instruction & user prefix全为-1，answer的blk从0开始
+            block_ids = torch.cat([prefix_block_ids, prev_block_ids, cur_block_ids], dim=0)  # instruction & user prefix are -1; the answer part is numbered by block
 
             turn_ids = torch.cat([
                 prefix_turn_ids,
-                torch.full((prev_len + cur_block_len,), int(generated_turn_id), dtype=torch.long, device=device),  # instruction从0开始
+                torch.full((prev_len + cur_block_len,), int(generated_turn_id), dtype=torch.long, device=device),  # instruction + clean prefix use the generated turn id
             ], dim=0)
             is_clean = torch.cat([
                 prefix_is_clean,
                 torch.ones(prev_len, dtype=torch.long, device=device),
-                torch.zeros(cur_block_len, dtype=torch.long, device=device), # instruction+clean prefix都是1，要generate的blk是0，只有is_clean是随着每个blk推理变化的
+                torch.zeros(cur_block_len, dtype=torch.long, device=device),  # instruction + clean prefix are 1; the part being generated is 0
             ], dim=0)
             if prefix_position_ids is not None:
                 gen_pos = torch.arange(

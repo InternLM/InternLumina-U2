@@ -38,7 +38,7 @@ def load_tokens(pkl_path: Path) -> tuple[torch.Tensor, torch.Tensor, str]:
 
     if "indices" in data:
         feats = data["indices"]
-        # indices 需要为 long 类型，供 quantizer.indices_to_codes 查表
+        # indices must be long for quantizer.indices_to_codes to index the codebook
         feats = feats.long() if isinstance(feats, torch.Tensor) else torch.tensor(feats).long()
         token_type = "indices"
     elif "tokens" in data:

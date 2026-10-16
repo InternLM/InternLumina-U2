@@ -230,6 +230,14 @@ class ParallelState:
     def dp_shard_enabled(self) -> bool:
         return self.dp_shard_size >= 1
 
+    @property
+    def dp_shard_sp_group(self) -> Optional["ProcessGroup"]:
+        """Process group spanning each unique FSDP parameter shard exactly once."""
+        if self.device_mesh is not None:
+            return self.device_mesh.get_group("dp_shard_sp")
+
+        return self.fsdp_group
+
     # ----------------------------- FSDP ----------------------------- #
     @property
     def fsdp_group(self) -> Optional["ProcessGroup"]:

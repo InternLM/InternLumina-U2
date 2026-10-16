@@ -14,6 +14,7 @@
 
 
 import os
+import time
 from abc import ABC
 from typing import Any, Dict, Union
 
@@ -32,6 +33,48 @@ else:
 logger = get_logger(__name__)
 
 _MODEL_DIR = "model"
+
+
+def _wait_for_dcp_files(save_checkpoint_path: Union[str, os.PathLike], metadata: Any) -> None:
+    """Wait until every file referenced by DCP metadata is visible and complete."""
+
+    required_sizes: Dict[str, int] = {}
+    for storage_info in metadata.storage_data.values():
+        relative_path = storage_info.relative_path
+        required_size = storage_info.offset + storage_info.length
+        required_sizes[relative_path] = max(required_sizes.get(relative_path, 0), required_size)
+
+    pending = required_sizes.copy()
+    timeout = float(os.environ.get("DCP_FILE_VISIBILITY_TIMEOUT", "1800"))
+    poll_interval = float(os.environ.get("DCP_FILE_VISIBILITY_POLL_INTERVAL", "5"))
+    start_time = time.monotonic()
+    next_log_time = start_time
+
+    while pending:
+        for relative_path, required_size in list(pending.items()):
+            path = os.path.join(save_checkpoint_path, relative_path)
+            try:
+                if os.path.getsize(path) >= required_size:
+                    del pending[relative_path]
+            except FileNotFoundError:
+                pass
+
+        if not pending:
+            return
+
+        now = time.monotonic()
+        if now - start_time >= timeout:
+            sample = ", ".join(sorted(pending)[:10])
+            raise FileNotFoundError(
+                f"Timed out after {timeout:.0f}s waiting for {len(pending)} DCP files under "
+                f"{save_checkpoint_path}. Missing/incomplete examples: {sample}"
+            )
+        if now >= next_log_time:
+            logger.warning(
+                f"Waiting for {len(pending)} DCP files to become visible under {save_checkpoint_path}."
+            )
+            next_log_time = now + 60
+        time.sleep(min(poll_interval, timeout - (now - start_time)))
 
 
 if is_veomni_patch_available():
@@ -111,10 +154,15 @@ def dcp_to_torch_state_dict(save_checkpoint_path: Union[str, os.PathLike]) -> ST
     # Load the state_dict from the DCP checkpoint
     state_dict: STATE_DICT_TYPE = {}
 
+    storage_reader = FileSystemReader(save_checkpoint_path)
+    _wait_for_dcp_files(save_checkpoint_path, storage_reader.read_metadata())
+
     _load_state_dict(
         state_dict,
-        storage_reader=FileSystemReader(save_checkpoint_path),
-        planner=_EmptyStateDictLoadPlanner(),
+        storage_reader=storage_reader,
+        # Only materialize model weights. Loading the full checkpoint also rebuilds
+        # optimizer state on rank 0, which is unnecessary for HF conversion.
+        planner=_EmptyStateDictLoadPlanner(keys={"model", "state.model"}),
         no_dist=True,
     )
     if "state" in state_dict:
