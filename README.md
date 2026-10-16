@@ -4,7 +4,7 @@
 
 *Shanghai AI Laboratory*
 
-[[📑 Technical Report (Coming Soon)](#)] &emsp; [[🌐 Project Page](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 Model (Coming Soon)](https://huggingface.co/internlm/InternLumina-U2)]
+[[📑 Technical Report](https://arxiv.org/abs/2610.20818)] &emsp; [[🌐 Project Page](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 Model](https://huggingface.co/internlm/InternLumina-U2)]
 
 [English](./README.md) | [简体中文](./README_zh-CN.md)
 
@@ -14,11 +14,12 @@
 
 ## 📰 News
 
-- **[2026-08]** 🚀 We release the inference code (this repository). Model weights, the training code and the tech report are coming soon — see the [Roadmap](#roadmap).
+- **[2026-10]** 🚀 Model weights are on [Hugging Face](https://huggingface.co/internlm/InternLumina-U2), the [technical report](https://arxiv.org/abs/2610.20818) is out, and the SFT training code is on [`main`](https://github.com/InternLM/InternLumina-U2).
+- **[2026-08]** 🚀 We release the inference code (this repository).
 
 ## 🌟 Introduction
 
-Intern Lumina U2 is a unified multimodal model that brings language, image, video and 3D into a single framework, covering **text QA, text-to-image generation, image understanding, image editing, video understanding and 3D understanding** with one model. It is a **16B-parameter MoE with 1B active parameters (16B-A1B)**, pairing an efficient sparse backbone with an **8-codebook fully-discrete visual representation** built on [AToken](https://github.com/apple/ml-atoken).
+Intern Lumina U2 is a unified multimodal model that brings language, image, video and 3D into a single framework, covering **text QA, text-to-image generation, image understanding, image editing, video understanding and 3D understanding** with one model. It is a **16.9B-parameter MoE with ~1.4B active parameters**, pairing an efficient sparse backbone with an **8-codebook fully-discrete visual representation** built on [AToken](https://github.com/apple/ml-atoken).
 
 Discrete unified models (e.g. MMaDA, Lumina-DiMOO) showed that once language and vision share a discrete token interface, understanding and generation no longer need separate model stacks. But going from *"can be unified"* to *"high-performance unified"* has been blocked by how visual content is represented and predicted: a single codebook caps the information a visual token can carry, while discrete–continuous hybrids split understanding and generation across different representations and decoding paths.
 
@@ -40,33 +41,51 @@ Intern Lumina U2 explores a new path: **fully-discrete multi-codebook modeling**
 ![output](assets/img4.png)
 <p align="center"><em>(b) Output-side design: spatially parallel denoising with a codebook-depth autoregressive head.</em></p>
 
-**3. Architecture built on LLaDA-2.0 MoE.** The language backbone is the LLaDA-2.0 MoE diffusion language model(16B-A1B). Its block-diffusion objective, sparse-expert capacity and language competence are extended to unified visual tasks through joint multi-task training.
+**3. A masked diffusion MoE backbone.** The language backbone is **LLaDA2.0-mini**, a masked diffusion language model converted from a pretrained autoregressive mixture-of-experts model, with **16.9B parameters in total and ~1.4B activated per token**. Its block-diffusion objective, sparse-expert capacity and language competence are extended to unified visual tasks through joint multi-task training.
 
-**4. Dual hardware ecosystems.** Intern Lumina U2 is adapted to both **NVIDIA GPUs and Ascend NPUs** across training, evaluation and inference, with operator-level numerical alignment between the two backends and an end-to-end pipeline that switches smoothly between them. On Ascend, systematic optimization — fused operators (e.g. FLA and GMM) that relieve the memory-access and kernel-launch bottlenecks of the sparse MoE architecture and long-sequence training, HSDP sharding tuned to balance communication cost against memory footprint, and gradient checkpointing to raise the maximum per-device sequence length — improves training efficiency on a thousand-card Ascend cluster by **1.85x**.
+**4. Full-stack on two hardware ecosystems.** Training, inference and evaluation run on both **Ascend and NVIDIA** platforms; the released checkpoints cover both. This branch ships the Ascend NPU inference path — see the [Roadmap](#roadmap) for what is released on each side.
 
 ## 🏆 Benchmarks
 
-Preliminary, partial results. Full comparison tables will appear in the upcoming technical report.
+Scores for the released checkpoint. **Bold** marks the best
+result among the models compared in the tech report; see it for the full tables
+and baselines.
 
 | Category | Benchmark | Score |
 |---|---|---|
-| Chart / document understanding | ChartQA | 86.52 |
-| | CharXiv-DQ | 83.65 |
-| Visual math reasoning | MathVision | 33.22 |
-| | DynaMath | 56.37 |
-| Hallucination robustness | HallusionBench | 62.15 |
-| Video understanding | VideoMME | 51.26 |
-| | MVBench | 59.74 |
-| 3D understanding | 3D MM-Vet | 41.8 |
-| Text-to-image | TIIF-Bench (Short/Long) | 84.60/85.95 |
-| | DPG-Bench | 87.10 |
-| Image editing | ImgEdit | 3.83 |
+| Documents & charts | ChartQA | 86.2 |
+| | CharXiv (DQ) | **85.9** |
+| Perception & hallucination | HallusionBench | **64.6** |
+| | MME-C | **667** |
+| | RealWorldQA | 62.9 |
+| Knowledge & math reasoning | MMMU | 52.2 |
+| | MMMU-Pro | **38.5** |
+| | MathVista | 68.0 |
+| | MathVision | **36.5** |
+| | DynaMath | **63.6** |
+| Video understanding | Video-MME | 52.6 |
+| | MLVU | 62.1 |
+| | MVBench | **61.8** |
+| 3D understanding | 3D MM-Vet (total) | **50.5** |
+| Text-to-image | GenEval (0–100) | **89** |
+| | DPG-Bench | 87.79 |
+| | TIIF-Bench (long) | **87.1** |
+| | WISE | 0.56 |
+| Image editing | ImgEdit (1–5) | 3.82 |
+| | GEdit-Bench EN / CN (0–10) | 6.06 / 5.95 |
 
-Intern Lumina U2 surpasses unified models such as InternVL-U, LLaDA2.0-Uni, Show-o2 and Lumina-DiMOO on fine-grained understanding and generation benchmarks, and outperforms the understanding-only InternVL3-8B on MathVision and DynaMath.
+Against the unified models in the report, Intern Lumina U2 leads on fine-grained
+document and chart understanding (CharXiv-DQ), hallucination robustness
+(HallusionBench), knowledge and math reasoning (MMMU-Pro, MathVision, DynaMath),
+video (MVBench), 3D (3D MM-Vet), and text-to-image prompt following (TIIF). It
+ties for best on MME-C and GenEval.
 
-## 📦 Release Scope
+## 📦 About this branch
 
-> **This repository contains the inference code only.** Model weights and the training code (a separate repository), the Ascend stack and the tech report will be released subsequently — see the [Roadmap](#roadmap).
+> This branch carries the **Ascend NPU inference** path. Model weights are on
+> [Hugging Face](https://huggingface.co/internlm/InternLumina-U2), and the
+> multi-task SFT training code plus the optional inference acceleration live on
+> [`main`](https://github.com/InternLM/InternLumina-U2); neither is duplicated here.
 
 ## 🛠️ Installation
 
@@ -107,11 +126,11 @@ Notes:
 
 ## 🖥️ Ascend NPU
 
-Ascend NPU support lives on the [`ascend-npu-support`](https://github.com/InternLM/InternLumina-U2/tree/ascend-npu-support) branch rather than on `main`. It runs the LLM backbone on the `torch_npu` fused attention kernel and routes fused MoE through the NPU grouped matmul, so it needs CANN and a matching `torch_npu` build in place of the CUDA toolchain and `flash-attn` above.
+This branch runs the LLM backbone on the `torch_npu` fused attention kernel and routes fused MoE through the NPU grouped matmul, so it needs CANN and a matching `torch_npu` build in place of the CUDA toolchain and `flash-attn` above.
 
 ## 🎨 Inference
 
-All inference goes through one driver (`infer_1024_sft.sh`) with one section per task. It expects a **split** HF checkpoint directory (`.../hf_ckpt_split`; weights to be released, see Roadmap), and — for anything that encodes or decodes images — the AToken tokenizer weights at `atoken_inference/checkpoints/atoken-sod.pt` (or `ATOKEN_MODEL_PATH=...`). The model asset directory must keep `config.json`, `configuration_internluminau2.py`, `modeling_internluminau2.py`, and `tokenbridge.py` together when using Transformers `AutoModel*`. The system prompt is part of the checkpoint's training contract: for strict reproduction, override the corresponding `*_SYSTEM_PROMPT` variable with the exact prompt used to train that checkpoint. Existing outputs are overwritten by default; pass `--skip_existing` to a Python entrypoint only when the full request is unchanged.
+All inference goes through one driver (`infer_1024_sft.sh`) with one section per task. It expects a **split** HF checkpoint directory (`.../hf_ckpt_split`; see the [model card](https://huggingface.co/internlm/InternLumina-U2)), and — for anything that encodes or decodes images — the AToken tokenizer weights at `atoken_inference/checkpoints/atoken-sod.pt` (or `ATOKEN_MODEL_PATH=...`). The model asset directory must keep `config.json`, `configuration_internluminau2.py`, `modeling_internluminau2.py`, and `tokenbridge.py` together when using Transformers `AutoModel*`. The system prompt is part of the checkpoint's training contract: for strict reproduction, override the corresponding `*_SYSTEM_PROMPT` variable with the exact prompt used to train that checkpoint. Existing outputs are overwritten by default; pass `--skip_existing` to a Python entrypoint only when the full request is unchanged.
 
 The underlying Python entrypoints (`infer_t2i_sft.py`, `infer_mmu_sft.py`, `infer_video_sft.py`, `infer_3d_sft.py`) can also be called directly; run any of them with `--help`. The model's low-level `generate` is a block-diffusion API, so use these task entrypoints instead of the standard Transformers `generate(max_length=...)` interface.
 
@@ -215,10 +234,13 @@ For 3D assets the equivalent offline encoder is `atoken_inference/glb_encode/enc
 ## 🗺️ Roadmap
 
 - [x] Inference code for T2I / editing / image, video and 3D understanding
-- [ ] Model weights
-- [ ] Training code 
-- [x] Ascend NPU training & inference stack
-- [ ] Tech report
+- [x] Model weights
+- [x] Multi-task SFT training code
+- [x] Training-free inference acceleration
+- [x] Tech report
+- [x] Ascend NPU inference — on the [`ascend-npu-support`](https://github.com/InternLM/InternLumina-U2/tree/ascend-npu-support) branch
+- [ ] Ascend NPU training stack
+- [ ] Hugging Face Space for interactive demos
 
 ## 🙏 Acknowledgements
 
@@ -237,10 +259,11 @@ This project is released under the [Apache License 2.0](LICENSE). The bundled `V
 ## 📖 Citation
 
 ```bibtex
-@misc{internluminau2,
-  title  = {Intern Lumina U2},
-  author = {{Intern Lumina U2 Team, Shanghai AI Laboratory}},
-  year   = {2026},
-  note   = {Tech report coming soon}
+@article{internluminau2,
+  title   = {Intern Lumina U2: A Multi-Codebook Diffusion Large Language Model for
+             Omni-Visual Understanding and Image Generation},
+  author  = {{Intern Lumina U2 Team, Shanghai AI Laboratory}},
+  journal = {arXiv preprint arXiv:2610.20818},
+  year    = {2026}
 }
 ```

@@ -4,7 +4,7 @@
 
 *上海人工智能实验室*
 
-[[📑 技术报告（即将发布）](#)] &emsp; [[🌐 项目主页](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 模型](https://huggingface.co/internlm/InternLumina-U2)]
+[[📑 技术报告](https://arxiv.org/abs/2610.20818)] &emsp; [[🌐 项目主页](https://internlm.github.io/InternLumina-U2/)] &emsp; [[🤗 模型](https://huggingface.co/internlm/InternLumina-U2)]
 
 [English](./README.md) | [简体中文](./README_zh-CN.md)
 
@@ -14,11 +14,12 @@
 
 ## 📰 新闻
 
-- **[2026-08]** 🚀 发布推理代码（本仓库）。模型权重、训练代码与技术报告即将发布 — 见[规划](#%EF%B8%8F-规划)。
+- **[2026-10]** 🚀 模型权重已发布于 [Hugging Face](https://huggingface.co/internlm/InternLumina-U2)，[技术报告](https://arxiv.org/abs/2610.20818)已公开，SFT 训练代码在 [`main`](https://github.com/InternLM/InternLumina-U2) 分支。
+- **[2026-08]** 🚀 发布推理代码（本仓库）。
 
 ## 🌟 简介
 
-Intern Lumina U2 是一个统一多模态模型，将语言、图像、视频与 3D 纳入同一框架，以一个模型覆盖**文本问答、文生图、图像理解、图像编辑、视频理解与 3D 理解**。模型为 **16B 总参数、1B 激活参数（16B-A1B）的 MoE**，以高效稀疏骨干搭配基于 [AToken](https://github.com/apple/ml-atoken) 的 **8 码本全离散视觉表示**。
+Intern Lumina U2 是一个统一多模态模型，将语言、图像、视频与 3D 纳入同一框架，以一个模型覆盖**文本问答、文生图、图像理解、图像编辑、视频理解与 3D 理解**。模型为 **16.9B 总参数、约 1.4B 激活参数的 MoE**，以高效稀疏骨干搭配基于 [AToken](https://github.com/apple/ml-atoken) 的 **8 码本全离散视觉表示**。
 
 MMaDA、Lumina-DiMOO 等离散统一模型表明：语言与视觉一旦共享离散 token 接口，理解与生成便不再需要各自独立的模型体系。但从"能够统一"到"高性能统一"，瓶颈在于视觉内容如何被表示和预测：单码本限制了单个视觉 token 的信息容量，而离散—连续混合路线又把理解与生成拆到不同的表示与解码路径上。
 
@@ -40,31 +41,47 @@ Intern Lumina U2 探索了一条新路径：**多码本全离散建模**。
 ![output](assets/img4.png)
 <p align="center"><em>(b) 输出侧设计：空间并行去噪 + 码本深度自回归 head。</em></p>
 
-**3. 基于 LLaDA-2.0 MoE 的架构。** 语言骨干为 LLaDA-2.0 MoE 扩散语言模型（16B-A1B），其块扩散目标、稀疏专家容量与语言能力通过联合多任务训练扩展至统一视觉任务。
+**3. 掩码扩散 MoE 骨干。** 语言骨干为 **LLaDA2.0-mini** —— 由预训练的自回归混合专家模型转换而来的掩码扩散语言模型，**总参数 16.9B、每 token 激活约 1.4B**；其块扩散目标、稀疏专家容量与语言能力通过联合多任务训练扩展至统一视觉任务。
 
-**4. 双硬件生态。** Intern Lumina U2 全面适配 **NVIDIA GPU 与昇腾 NPU**，覆盖训练、评测与推理，完成双后端算子级数值对齐并构建可平滑切换的端到端管线。在昇腾侧，通过 FLA、GMM 等融合算子缓解 MoE 稀疏架构与长序列训练的访存与 kernel launch 瓶颈、HSDP 分片寻优平衡通信与显存、gradient checkpointing 提升单卡最大序列长度等系统性优化，千卡级昇腾集群训练效率提升 **1.85 倍**。
+**4. 双硬件生态的全栈支持。** 训练、推理与评测均可运行在 **昇腾与 NVIDIA** 两套平台上，已发布的 checkpoint 覆盖两者。本分支提供昇腾 NPU 推理路径；各自已发布的部分见[规划](#roadmap)。
 
 ## 🏆 评测结果
 
+已发布checkpoint 的分数。**粗体**表示在技术报告所对比的模型中为最佳；完整对比表与
+基线见报告。
+
 | 类别 | 基准 | 分数 |
 |---|---|---|
-| 图表 / 文档理解 | ChartQA | 86.52 |
-| | CharXiv-DQ | 83.65 |
-| 视觉数学推理 | MathVision | 33.22 |
-| | DynaMath | 56.37 |
-| 幻觉鲁棒性 | HallusionBench | 62.15 |
-| 视频理解 | VideoMME | 51.26 |
-| | MVBench | 59.74 |
-| 3D 理解 | 3D MM-Vet | 41.8 |
-| 文生图 | TIIF-Bench (Short/Long) | 84.60/85.95 |
-| | DPG-Bench | 87.10 |
-| 图像编辑 | ImgEdit | 3.83 |
+| 文档与图表 | ChartQA | 86.2 |
+| | CharXiv (DQ) | **85.9** |
+| 感知与幻觉 | HallusionBench | **64.6** |
+| | MME-C | **667** |
+| | RealWorldQA | 62.9 |
+| 知识与数学推理 | MMMU | 52.2 |
+| | MMMU-Pro | **38.5** |
+| | MathVista | 68.0 |
+| | MathVision | **36.5** |
+| | DynaMath | **63.6** |
+| 视频理解 | Video-MME | 52.6 |
+| | MLVU | 62.1 |
+| | MVBench | **61.8** |
+| 3D 理解 | 3D MM-Vet（总分） | **50.5** |
+| 文生图 | GenEval（0–100） | **89** |
+| | DPG-Bench | 87.79 |
+| | TIIF-Bench（long） | **87.1** |
+| | WISE | 0.56 |
+| 图像编辑 | ImgEdit（1–5） | 3.82 |
+| | GEdit-Bench EN / CN（0–10） | 6.06 / 5.95 |
 
-在细粒度理解与生成基准上，Intern Lumina U2 超越 InternVL-U、LLaDA2.0-Uni、Show-o2、Lumina-DiMOO 等统一模型，并在 MathVision 与 DynaMath 上领先理解专用模型 InternVL3-8B。完整对比表见后续技术报告。
+在报告对比的统一模型中，Intern Lumina U2 在细粒度文档与图表理解（CharXiv-DQ）、幻觉鲁棒性
+（HallusionBench）、知识与数学推理（MMMU-Pro、MathVision、DynaMath）、视频（MVBench）、
+3D（3D MM-Vet）以及文生图的指令跟随（TIIF）上领先；在 MME-C 与 GenEval 上并列第一。
 
-## 📦 发布范围
+## 📦 关于本分支
 
-> **本仓库仅包含推理代码。** 模型权重、训练代码（独立仓库）、昇腾适配与技术报告将陆续发布 — 见[规划](#%EF%B8%8F-规划)。
+> 本分支提供 **昇腾 NPU 推理** 路径。模型权重发布于
+> [Hugging Face](https://huggingface.co/internlm/InternLumina-U2)；多任务 SFT 训练代码与可选的
+> 推理加速在 [`main`](https://github.com/InternLM/InternLumina-U2) 分支，本分支不重复提供。
 
 ## 🛠️ 安装
 
@@ -104,11 +121,11 @@ pip install -e VeOmni/ --no-deps
 
 ## 🖥️ 昇腾 NPU
 
-昇腾 NPU 的适配位于 [`ascend-npu-support`](https://github.com/InternLM/InternLumina-U2/tree/ascend-npu-support) 分支，而非 `main`。该分支的 LLM 骨干运行在 `torch_npu` 融合注意力内核上，融合 MoE 经由 NPU grouped matmul，因此需要 CANN 与配套的 `torch_npu`，取代上面的 CUDA 工具链与 `flash-attn`。
+本分支的 LLM 骨干运行在 `torch_npu` 融合注意力内核上，融合 MoE 经由 NPU grouped matmul，因此需要 CANN 与配套的 `torch_npu`，取代上面的 CUDA 工具链与 `flash-attn`。
 
 ## 🎨 推理
 
-所有推理经由同一个驱动脚本（`infer_1024_sft.sh`），每个任务一个 section。它需要一个 **split** 格式的 HF checkpoint 目录（`.../hf_ckpt_split`；权重即将发布，见规划），以及 — 凡涉及图像编解码 — 位于 `atoken_inference/checkpoints/atoken-sod.pt` 的 AToken 分词器权重（或经 `ATOKEN_MODEL_PATH=...` 指定）。使用 Transformers `AutoModel*` 时，模型资产目录须同时包含 `config.json`、`configuration_internluminau2.py`、`modeling_internluminau2.py` 与 `tokenbridge.py`。System prompt 属于 checkpoint 的训练契约：如需严格复现，请用训练该 checkpoint 时的原始 prompt 覆盖对应的 `*_SYSTEM_PROMPT` 变量。已有输出默认会被覆盖；仅当整个请求完全不变时才向 Python 入口传 `--skip_existing`。
+所有推理经由同一个驱动脚本（`infer_1024_sft.sh`），每个任务一个 section。它需要一个 **split** 格式的 HF checkpoint 目录（`.../hf_ckpt_split`，见[模型页](https://huggingface.co/internlm/InternLumina-U2)），以及 — 凡涉及图像编解码 — 位于 `atoken_inference/checkpoints/atoken-sod.pt` 的 AToken 分词器权重（或经 `ATOKEN_MODEL_PATH=...` 指定）。使用 Transformers `AutoModel*` 时，模型资产目录须同时包含 `config.json`、`configuration_internluminau2.py`、`modeling_internluminau2.py` 与 `tokenbridge.py`。System prompt 属于 checkpoint 的训练契约：如需严格复现，请用训练该 checkpoint 时的原始 prompt 覆盖对应的 `*_SYSTEM_PROMPT` 变量。已有输出默认会被覆盖；仅当整个请求完全不变时才向 Python 入口传 `--skip_existing`。
 
 底层 Python 入口（`infer_t2i_sft.py`、`infer_mmu_sft.py`、`infer_video_sft.py`、`infer_3d_sft.py`）也可直接调用，任意入口加 `--help` 查看参数。模型底层的 `generate` 是块扩散 API，请使用这些任务入口，而非标准 Transformers 的 `generate(max_length=...)` 接口。
 
@@ -207,13 +224,18 @@ python tools/tokenize_image.py --image path/to/folder --max_edge 512 \
 
 3D 资产对应的离线编码器为 `atoken_inference/glb_encode/encode_glb_tokens.py`（`--glb ... --output ...`；需 Blender，见上文 3D 说明）。
 
+<a id="roadmap"></a>
+
 ## 🗺️ 规划
 
 - [x] T2I / 编辑 / 图像、视频与 3D 理解的推理代码
-- [ ] 模型权重
-- [ ] 训练代码
-- [x] 昇腾 NPU 训练与推理适配
-- [ ] 技术报告
+- [x] 模型权重
+- [x] 多任务 SFT 训练代码
+- [x] 训练无关的推理加速
+- [x] 技术报告
+- [x] 昇腾 NPU 推理 —— 见 [`ascend-npu-support`](https://github.com/InternLM/InternLumina-U2/tree/ascend-npu-support) 分支
+- [ ] 昇腾 NPU 训练栈
+- [ ] 用于在线体验的 Hugging Face Space
 
 ## 🙏 致谢
 
@@ -231,10 +253,11 @@ python tools/tokenize_image.py --image path/to/folder --max_edge 512 \
 ## 📖 引用
 
 ```bibtex
-@misc{internluminau2,
-  title  = {Intern Lumina U2},
-  author = {{Intern Lumina U2 Team, Shanghai AI Laboratory}},
-  year   = {2026},
-  note   = {Tech report coming soon}
+@article{internluminau2,
+  title   = {Intern Lumina U2: A Multi-Codebook Diffusion Large Language Model for
+             Omni-Visual Understanding and Image Generation},
+  author  = {{Intern Lumina U2 Team, Shanghai AI Laboratory}},
+  journal = {arXiv preprint arXiv:2610.20818},
+  year    = {2026}
 }
 ```
