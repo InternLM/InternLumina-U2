@@ -23,8 +23,9 @@
           <a href="#citation">Resources</a>
         </nav>
         <div class="release-links" aria-label="Release resources">
-          <span title="Technical report is coming soon">Report <i>soon</i></span>
+          <a href="https://arxiv.org/abs/2610.20818" target="_blank" rel="noopener" title="Technical report on arXiv">Report</a>
           <a href="https://github.com/InternLM/InternLumina-U2" target="_blank" rel="noopener" title="Inference code on GitHub">Code</a>
+          <a href="https://huggingface.co/internlm/InternLumina-U2" target="_blank" rel="noopener" title="Model weights on Hugging Face">Model</a>
         </div>
       </div>
     </header>
@@ -59,32 +60,54 @@
       </figure>
 
       <section class="results section shell" id="results" aria-labelledby="results-title">
-        <div class="section-heading results-heading"><h2 id="results-title">Experimental Results</h2><p class="results-note">Preliminary, partial results. Full comparison tables will appear in the upcoming technical report.</p></div>
+        <div class="section-heading results-heading"><h2 id="results-title">Experimental Results</h2></div>
         <div class="table-scroll" role="region" aria-label="Benchmark comparison table" tabindex="0">
           <table class="benchmark-table">
             <thead>
               <tr><th>Task family</th><th>Benchmark</th><th>InternVL-U</th><th>LLaDA2.0-Uni</th><th>LLaDA-o</th><th>Intern Lumina U2</th></tr>
             </thead>
             <tbody>
-              <tr class="table-group"><td colspan="6">Visual reasoning &amp; perception</td></tr>
-              <tr><td>Document &amp; chart</td><td>ChartQA ↑</td><td>76.60</td><td>80.10</td><td>87.90</td><td class="ours">86.52</td></tr>
-              <tr><td>Document &amp; chart</td><td>CharXiv-DQ ↑</td><td>53.30</td><td>68.40</td><td>69.80</td><td class="ours">83.65</td></tr>
-              <tr><td>Perception</td><td>HallusionBench ↑</td><td>44.80</td><td>50.20</td><td>47.40</td><td class="ours">62.15</td></tr>
-              <tr><td>Knowledge</td><td>MMMU-Pro ↑</td><td>20.80</td><td>34.00</td><td>28.30</td><td class="ours">36.13</td></tr>
-              <tr><td>Math reasoning</td><td>MathVision ↑</td><td>22.10</td><td>26.70</td><td>15.70</td><td class="ours">33.22</td></tr>
-              <tr><td>Math reasoning</td><td>DynaMath ↑</td><td>46.97</td><td>46.89</td><td>40.58</td><td class="ours">56.37</td></tr>
-              <tr class="table-group"><td colspan="6">Temporal understanding</td></tr>
-              <tr><td>Video</td><td>Video-MME ↑</td><td>53.00</td><td>43.76</td><td>44.90</td><td class="ours">51.26</td></tr>
-              <tr><td>Video</td><td>MVBench ↑</td><td>59.61</td><td>48.97</td><td>47.16</td><td class="ours">59.74</td></tr>
-              <tr><td>Video</td><td>MLVU ↑</td><td>57.27</td><td>45.81</td><td>48.62</td><td class="ours">57.03</td></tr>
-              <tr class="table-group"><td colspan="6">Generation &amp; editing</td></tr>
-              <tr><td>Image generation</td><td>GenEval ↑</td><td>0.85</td><td>0.89</td><td>0.86</td><td class="ours">0.81</td></tr>
-              <tr><td>Image generation</td><td>DPG ↑</td><td>85.18</td><td>87.76</td><td>87.04</td><td class="ours">87.10</td></tr>
-              <tr><td>Image generation</td><td>TIIF Short / Long ↑</td><td>74.90 / 73.90</td><td>—</td><td>—</td><td class="ours">84.60 / 85.95</td></tr>
-              <tr><td>Image editing</td><td>ImgEdit ↑</td><td>3.67</td><td>3.92</td><td>—</td><td class="ours">3.8307</td></tr>
+              <tr class="table-group"><td colspan="6">Documents and charts</td></tr>
+              <tr><td>Document &amp; chart</td><td>ChartQA ↑</td><td>76.6</td><td>80.1</td><td>87.9</td><td class="ours">86.2</td></tr>
+              <tr><td>Document &amp; chart</td><td>CharXiv-DQ ↑</td><td>53.3</td><td>68.4</td><td>69.8</td><td class="ours best">85.9</td></tr>
+              <tr class="table-group"><td colspan="6">Perception and hallucination</td></tr>
+              <tr><td>Perception</td><td>HallusionBench ↑</td><td>44.8</td><td>50.2</td><td>47.4</td><td class="ours best">64.6</td></tr>
+              <tr><td>Perception</td><td>MME-C ↑</td><td>279</td><td>587</td><td>527</td><td class="ours best">667</td></tr>
+              <tr><td>Perception</td><td>RealWorldQA ↑</td><td>56.4</td><td>66.7</td><td>60.8</td><td class="ours">62.9</td></tr>
+              <tr class="table-group"><td colspan="6">Knowledge and mathematical reasoning</td></tr>
+              <tr><td>Knowledge</td><td>MMMU ↑</td><td>54.7</td><td>50.1</td><td>44.9</td><td class="ours">52.2</td></tr>
+              <tr><td>Knowledge</td><td>MMMU-Pro ↑</td><td>20.8</td><td>34.0</td><td>28.3</td><td class="ours best">38.5</td></tr>
+              <tr><td>Math reasoning</td><td>MathVista ↑</td><td>55.8</td><td>68.1</td><td>66.1</td><td class="ours">68.0</td></tr>
+              <tr><td>Math reasoning</td><td>MathVision ↑</td><td>22.1</td><td>26.7</td><td>15.7</td><td class="ours best">36.5</td></tr>
+              <tr><td>Math reasoning</td><td>DynaMath ↑</td><td>46.97</td><td>46.89</td><td>40.58</td><td class="ours best">63.6</td></tr>
+              <tr class="table-group"><td colspan="6">Generation and editing</td></tr>
+              <tr><td>Image generation</td><td>GenEval (0–100) ↑</td><td>85</td><td class="best">89</td><td>86</td><td class="ours best">89</td></tr>
+              <tr><td>Image generation</td><td>DPG-Bench ↑</td><td>85.18</td><td>87.76</td><td>87.04</td><td class="ours">87.79</td></tr>
+              <tr><td>Image generation</td><td>TIIF (long) ↑</td><td>73.9</td><td>—</td><td>—</td><td class="ours best">87.1</td></tr>
+              <tr><td>Image generation</td><td>WISE ↑</td><td>0.46</td><td class="best">0.68</td><td>—</td><td class="ours">0.56</td></tr>
+              <tr><td>Image editing</td><td>ImgEdit (1–5) ↑</td><td>3.67</td><td class="best">3.92</td><td>—</td><td class="ours">3.82</td></tr>
+              <tr><td>Image editing</td><td>GEdit-Bench EN ↑</td><td class="best">6.66</td><td>6.61</td><td>—</td><td class="ours">6.06</td></tr>
+              <tr><td>Image editing</td><td>GEdit-Bench CN ↑</td><td>—</td><td class="best">6.66</td><td>—</td><td class="ours">5.95</td></tr>
+              <tr class="table-group"><td colspan="6">Video understanding</td></tr>
+              <tr class="table-models"><td colspan="2">Compared against</td><td>LLaVA-Mini</td><td>VideoLLaMA2-7B</td><td>LLaDA-V</td><td>Intern Lumina U2</td></tr>
+              <tr><td>Video</td><td>Video-MME ↑</td><td>—</td><td>46.6</td><td class="best">56.1</td><td class="ours">52.6</td></tr>
+              <tr><td>Video</td><td>MLVU ↑</td><td>42.8</td><td>—</td><td>59.5</td><td class="ours best">62.1</td></tr>
+              <tr><td>Video</td><td>MVBench ↑</td><td>44.5</td><td>54.6</td><td>—</td><td class="ours best">61.8</td></tr>
+              <tr class="table-group"><td colspan="6">3D understanding</td></tr>
+              <tr class="table-models"><td colspan="2">Compared against</td><td>PointLLM-7B</td><td>ShapeLLM-7B</td><td>—</td><td>Intern Lumina U2</td></tr>
+              <tr><td>3D</td><td>3D MM-Vet (total) ↑</td><td>41.2</td><td class="best">47.4</td><td>—</td><td class="ours best">50.5</td></tr>
             </tbody>
           </table>
+          <p class="table-note">
+            Scores are the released Ascend-trained checkpoint; baseline numbers are
+            taken from the tech report. GenEval is on a 0–100 scale. Video and 3D are
+            compared against specialist models, named in the table where they apply.
+            Video-MME is without subtitles and MLVU is m-avg. A dash means the model
+            does not report that benchmark; Video-LLaVA-7B (Video-MME 39.9, MVBench
+            43.1) is in the report but does not fit the three baseline columns here.
+          </p>
         </div>
+        <div class="results-footer"><p>Full comparison tables will appear in the upcoming technical report.</p></div>
       </section>
 
       <section class="method section shell" id="method" aria-labelledby="method-title">
@@ -127,7 +150,21 @@
         </div>
       </section>
 
-      <section class="citation section shell" id="citation"><div class="resource-placeholder"><p class="overline"><span></span> Resources</p><h2>Coming <em>soon.</em></h2></div></section>
+      <section class="citation section shell" id="citation">
+        <p class="overline"><span></span> Resources</p>
+        <div class="release-links" style="margin-left:0;margin-bottom:22px;">
+          <a href="https://arxiv.org/abs/2610.20818" target="_blank" rel="noopener">Technical report</a>
+          <a href="https://github.com/InternLM/InternLumina-U2" target="_blank" rel="noopener">Code</a>
+          <a href="https://huggingface.co/internlm/InternLumina-U2" target="_blank" rel="noopener">Model</a>
+        </div>
+        <pre class="bibtex"><code>@article{internluminau2,
+  title   = {Intern Lumina U2: A Multi-Codebook Diffusion Large Language Model for
+             Omni-Visual Understanding and Image Generation},
+  author  = {{Intern Lumina U2 Team, Shanghai AI Laboratory}},
+  journal = {arXiv preprint arXiv:2610.20818},
+  year    = {2026}
+}</code></pre>
+      </section>
     </main>
 
     <footer><div class="shell footer-inner"><a class="brand" href="#overview"><img src="assets/intern-lumina-u2-star-mark.jpg" alt="" /><span>Intern Lumina <b>U2</b></span></a><p>Shanghai AI Laboratory · 2026</p><a class="text-link" href="#overview">Back to top <span>↑</span></a></div></footer>
