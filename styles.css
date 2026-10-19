@@ -52,16 +52,21 @@ a { color: inherit; text-decoration: none; }.shell { width: var(--shell); margin
 }
 
 /* Video and 3D are compared against specialists, not the three unified models
-   in the header, so each of those groups restates its own column models. */
-.benchmark-table tr.table-models td {
+   in the header, so each of those groups restates its own column models. These
+   rows are header-like: they follow the dark group-row palette and, unlike body
+   rows, do not react to hover. */
+.table-scroll .benchmark-table tbody tr.table-models td,
+.table-scroll .benchmark-table tbody tr.table-models:hover td {
   font-size: 0.92em;
   font-weight: 700;
-  color: #6f777a;
-  background: #faf8f4;
+  color: #f6ddcc;
+  background: #3f3230;
+  box-shadow: none;
 }
-.benchmark-table tr.table-models td:first-child {
+.table-scroll .benchmark-table tbody tr.table-models td:first-child,
+.table-scroll .benchmark-table tbody tr.table-models:hover td:first-child {
   font-weight: 600;
-  opacity: 0.75;
+  color: #d7b19d;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-size: 0.82em;
