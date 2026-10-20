@@ -20,7 +20,11 @@ TRAIN_ENTRY="${TRAIN_ENTRY:-tasks/train_sft.py}"
 TRAIN_CONFIG="${TRAIN_CONFIG:-configs/sft_packing.yaml}"
 
 # ---- torchrun topology (override via env for multi-node) ----
-NPROC_PER_NODE="${NPROC_PER_NODE:-$(nvidia-smi -L 2>/dev/null | wc -l)}"
+if command -v nvidia-smi &>/dev/null; then
+  NPROC_PER_NODE="${NPROC_PER_NODE:-$(nvidia-smi -L 2>/dev/null | wc -l)}"
+else
+  NPROC_PER_NODE="${NPROC_PER_NODE:-$(ls -d /dev/davinci[0-9]* 2>/dev/null | wc -l || true)}"
+fi
 NNODES="${NNODES:-1}"
 NODE_RANK="${NODE_RANK:-0}"
 MASTER_ADDR="${MASTER_ADDR:-127.0.0.1}"
