@@ -380,7 +380,7 @@ For 3D assets the equivalent offline encoder is `atoken_inference/glb_encode/enc
 - [x] Training-free inference acceleration
 - [x] Tech report
 - [x] Ascend NPU inference — on the [`ascend-npu-support`](https://github.com/InternLM/InternLumina-U2/tree/ascend-npu-support) branch
-- [ ] Ascend NPU training stack
+- [x] Ascend NPU training stack
 - [ ] Hugging Face Space for interactive demos
 
 ## 🙏 Acknowledgements
