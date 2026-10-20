@@ -28,7 +28,7 @@ def clip_grad_norm(
 
     # FSDP2 without EP: still need distributed reductions across the FSDP group
     ps = get_parallel_state()
-    fsdp_group = ps.fsdp_group
+    fsdp_group = ps.dp_shard_sp_group
     try:
         world_size = dist.get_world_size(fsdp_group) if fsdp_group is not None else 1
     except Exception:
@@ -70,7 +70,7 @@ def ep_fsdp2_clip_grad_norm(
     """
 
     ps = get_parallel_state()
-    fsdp_group = ps.fsdp_group
+    fsdp_group = ps.dp_shard_sp_group
     ep_group = ps.ep_group if ps.ep_enabled else None
     # For EP params sharded by FSDP2 along hidden dimension
     ep_fsdp_group = None

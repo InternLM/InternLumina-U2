@@ -17,6 +17,11 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+from utils.media_layout import (
+    as_2d as _as_2d,
+    add_break_line_multi_codebook_video,
+    make_special_2d,
+)
 from utils.generation_utils import setup_seed
 from utils.tokenizer_contract import validate_tokenizer_contract
 from generators.text_understanding_generator import generate_text_bd, load_inference_model
@@ -142,62 +147,12 @@ def encode_video_to_tokens(video_path: str, num_frames: int = 32, max_size: int 
     return indices, coords, T, H, W
 
 
-def add_break_line_multi_codebook_3d(tokens, coords, H, W, D, new_number=5002, layer_end_number=5003):
-    if not isinstance(tokens, torch.Tensor):
-        tokens = torch.tensor(tokens, dtype=torch.int64)
-    if not isinstance(coords, torch.Tensor):
-        coords = torch.tensor(coords, dtype=torch.int64)
-    device = tokens.device
-    dtype = tokens.dtype
-    token_len, num_codebooks = tokens.shape
-    if token_len == 0:
-        return tokens
-    coords_np = coords.cpu().numpy() if coords.device.type != "cpu" else coords.numpy()
-    if coords_np.ndim != 2 or coords_np.shape[1] not in (3, 5):
-        raise ValueError(f"Unexpected coords shape {coords_np.shape}")
-    if coords_np.shape[1] == 5:
-        x, y, z = coords_np[:, 2], coords_np[:, 3], coords_np[:, 4]
-    else:
-        x, y, z = coords_np[:, 0], coords_np[:, 1], coords_np[:, 2]
-    order = np.lexsort((x, y, z))
-    tokens = tokens[torch.tensor(order, device=device, dtype=torch.int64)]
-    z_arr = z[order]
-    y_arr = y[order]
-    pad_row = torch.full((1, num_codebooks), new_number, dtype=dtype, device=device)
-    pad_layer = torch.full((1, num_codebooks), layer_end_number, dtype=dtype, device=device)
-    out = []
-    for i in range(token_len):
-        out.append(tokens[i:i+1])
-        is_last = i == token_len - 1
-        cur_z, cur_y = z_arr[i], y_arr[i]
-        next_z = z_arr[i+1] if not is_last else None
-        next_y = y_arr[i+1] if not is_last else None
-        is_row_end = is_last or next_y != cur_y or next_z != cur_z
-        is_layer_end = is_last or next_z != cur_z
-        if is_row_end:
-            out.append(pad_row)
-        if is_layer_end:
-            out.append(pad_layer)
-    return torch.cat(out, dim=0)
 
 
-def add_break_line_multi_codebook_video(tokens, coords, T, H, W, new_number=5004, frame_end_number=5005):
-    if not isinstance(coords, torch.Tensor):
-        coords = torch.tensor(coords, dtype=torch.int64)
-    remapped = coords[:, [0, 4, 2, 3, 1]]  # [batch, t, x, y, z] -> [batch, z, x, y, t]
-    return add_break_line_multi_codebook_3d(
-        tokens, remapped, H, W, T,
-        new_number=new_number, layer_end_number=frame_end_number,
-    )
 
 
-def _as_2d(token_ids, device='cuda'):
-    t = torch.tensor(token_ids, dtype=torch.int64, device=device)
-    return t.unsqueeze(1).repeat(1, NUM_CODEBOOKS)
 
 
-def make_special_2d(token_id: int, device='cuda') -> torch.Tensor:
-    return torch.full((1, NUM_CODEBOOKS), token_id, dtype=torch.long, device=device)
 
 
 def build_sft_video_prefix(tokenizer, system_prompt, user_text, video_tokens_2d, device='cuda'):

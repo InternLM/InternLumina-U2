@@ -1,10 +1,10 @@
 import argparse
 import os
 
-from transformers import AutoConfig, AutoProcessor
+from transformers import AutoConfig
 
 from veomni.checkpoint import dcp_to_torch_state_dict
-from veomni.models import save_model_weights
+from veomni.models import build_tokenizer, save_model_weights
 from veomni.utils import helper
 
 
@@ -16,14 +16,12 @@ def merge_to_hf_pt(load_dir: str, save_path: str, model_assets_dir: str = None):
     state_dict = dcp_to_torch_state_dict(
         save_checkpoint_path=load_dir,
     )
-    # logger.info_rank0(f"Converting state_dict: {}")
     if model_assets_dir is not None:
-        config = AutoConfig.from_pretrained(model_assets_dir)
-        processor = AutoProcessor.from_pretrained(model_assets_dir, trust_remote_code=True)
-
-        save_model_weights(save_path, state_dict["model"], model_assets=[config, processor])
+        config = AutoConfig.from_pretrained(model_assets_dir, trust_remote_code=True)
+        tokenizer = build_tokenizer(model_assets_dir)
+        save_model_weights(save_path, state_dict, model_assets=[config, tokenizer])
     else:
-        save_model_weights(save_path, state_dict["model"])
+        save_model_weights(save_path, state_dict)
 
 
 if __name__ == "__main__":

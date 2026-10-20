@@ -143,15 +143,15 @@ def load_balancing_loss_func(router_logits, num_experts, topk_idx=None):
         topk_idx = topk_idx.reshape(-1, topk_idx.size(-1))
 
     probs = torch.softmax(router_logits, dim=-1)          # (B*S, E)
-    P_i = probs.mean(dim=0)                               # (E,) 且 sum(P_i)=1
+    P_i = probs.mean(dim=0)                               # (E,), sums to 1
 
     if topk_idx is None:
         topk_idx = torch.topk(router_logits, k=1, dim=-1)[1]  # (B*S, 1)
 
     tokens_per_expert = torch.bincount(topk_idx.view(-1), minlength=num_experts)
-    f_i = tokens_per_expert.float() / topk_idx.numel()    # (E,) 且 sum(f_i)=1
+    f_i = tokens_per_expert.float() / topk_idx.numel()    # (E,), sums to 1
 
-    loss = num_experts * torch.sum(f_i * P_i)             # 上界为 num_experts
+    loss = num_experts * torch.sum(f_i * P_i)             # upper bound: num_experts
     return loss
 
 _CONFIG_FOR_DOC = "LLaDA2MoeConfig"
@@ -481,7 +481,7 @@ class LLaDA2MoeSparseMoeBlock(nn.Module):
         return y, (router_logits_out, topk_idx.view(bsz, seq_len, -1))
 
     def forward(self, hidden_states):
-        # TODO (zhiguang): make a flag here for selecting different forward in different type
+        # Select the forward implementation by MoE expert layout.
         if self.config.model_type == "llada2_moe_veomni":
             return self._fuse_moe_forward(hidden_states)
         else:
@@ -671,13 +671,13 @@ class LLaDA2MoeAttention(nn.Module):
 # The packing mask built by the backbone is strictly block-diagonal (`same_seg` is a
 # hard AND term), so attention can be computed segment by segment instead of over the
 # whole S x S matrix: FLOPs drop from S^2 to sum(L_i^2). This is an equality in exact
-# arithmetic; whether it holds in bf16 is exactly what tools/seg_attn_parity.py measures.
+# arithmetic, and holds in bf16 up to kernel reduction order.
 #
-# One case is *not* an identity if handled naively: rows that are fully masked (the SP
-# tail padding, at most sp_size-1 tokens). The mask uses torch.finfo(dtype).min rather
-# than -inf, so such a row degenerates into a uniform average -- over all S keys in the
-# dense path, but only over its own segment if the pad were folded into the last one.
-# The tail is therefore attended against the full K/V, which reproduces dense exactly.
+# One case is *not* an identity if handled naively: rows that are fully masked, i.e. the
+# padding at the tail of a pack. The mask uses torch.finfo(dtype).min rather than -inf,
+# so such a row degenerates into a uniform average -- over all S keys in the dense path,
+# but only over its own segment if the pad were folded into the last one. The tail is
+# therefore attended against the full K/V, which reproduces dense exactly.
 
 SEG_ATTN_STRICT = os.environ.get("SEG_ATTN_STRICT", "0") == "1"
 
@@ -892,7 +892,6 @@ class LLaDA2MoeSdpaAttention(LLaDA2MoeAttention):
                 raise ValueError(
                     f"Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}"
                 )
-        #######
         # SDPA with memory-efficient backend is currently (torch==2.1.2) bugged with non-contiguous inputs with custom attn_mask,
         # Reference: https://github.com/pytorch/pytorch/issues/112577.
         if query_states.device.type == "cuda" and attention_mask is not None:
@@ -1416,9 +1415,19 @@ class LLaDA2MoeModel(LLaDA2MoePreTrainedModel):
             if input_ids.dtype not in (torch.long, torch.int, torch.int32, torch.int64):
                 input_ids = input_ids.long()
             if input_ids.dim() == 2:
-                # Hugging Face's conventional [batch, sequence] text input has one
-                # token stream. Internal multimodal callers provide [batch, seq, C].
-                input_ids = input_ids.unsqueeze(-1)
+                # A 2-D input_ids is ambiguous and the two readings need opposite
+                # fixes, so disambiguate on the trailing dimension:
+                #   [S, C] -- the packing collator drops the batch dim and keeps
+                #             all C codebooks, so add the batch dim back.
+                #   [B, S] -- Hugging Face's conventional single-stream text
+                #             input, so add the codebook dim.
+                # Guessing wrong does not raise here: it silently swaps
+                # seq_length and num_codebooks, and the length checks below then
+                # reject a perfectly valid batch.
+                if input_ids.shape[-1] == self.num_codebooks:
+                    input_ids = input_ids.unsqueeze(0)
+                else:
+                    input_ids = input_ids.unsqueeze(-1)
             elif input_ids.dim() != 3:
                 raise ValueError(f"input_ids must have shape [B, S] or [B, S, C], got {tuple(input_ids.shape)}")
             batch_size, seq_length, num_codebooks = input_ids.shape
@@ -1495,7 +1504,7 @@ class LLaDA2MoeModel(LLaDA2MoePreTrainedModel):
 
         if position_ids is None:
             device = inputs_embeds.device
-            # position_ids 始终是 (B, seq_len)，因为位置是空间位置，不是码本维度
+            # position_ids is always (B, seq_len): positions are spatial, not codebook.
             position_ids = torch.arange(
                 past_key_values_length, seq_length + past_key_values_length, dtype=torch.long, device=device
             )
@@ -1802,10 +1811,10 @@ class MultiCodebookARHead(nn.Module):
 
         self.num_codebooks = num_codebooks
 
-        # 条件投影：hidden_states -> 通道空间
+        # Conditioning projection: hidden_states -> channel space.
         self.condition_proj = nn.Linear(hidden_size, channel_embed_dim)
 
-        # 通道位置 & timestep embedding（跟 TokenBridge 类似）
+        # Channel-position and timestep embeddings (similar to TokenBridge).
         self.channel_embed = nn.Parameter(
             torch.zeros(1, num_codebooks, channel_embed_dim)
         )
@@ -1814,7 +1823,7 @@ class MultiCodebookARHead(nn.Module):
         )
 
 
-        # 通道级 transformer blocks（自回归掩码）
+        # Channel-level transformer blocks (causal mask).
         channel_mask = torch.full(
             (num_codebooks, num_codebooks),
             float("-inf"),
@@ -1841,7 +1850,7 @@ class MultiCodebookARHead(nn.Module):
         self.channel_final = FinalLayer(channel_embed_dim, norm_layer=partial(nn.LayerNorm, eps=1e-6))
 
 
-        # 初始化（与 TokenBridge 一致风格，但都是重新学习）
+        # Initialization follows TokenBridge's style; all weights are learned fresh.
         self._init_own_weights()
 
     def _init_own_weights(self):
@@ -1878,8 +1887,8 @@ class MultiCodebookARHead(nn.Module):
 
     def forward(self, hidden_states, token_embs, temperature=1.0):
         """
-        hidden_states: [num_valid, H]       (flatten 后有效位置的 hidden)
-        token_embs:    [num_valid, C-1, H]  (对应有效位置的 codebook token embedding)
+        hidden_states: [num_valid, H]       hidden states of valid flattened positions
+        token_embs:    [num_valid, C-1, H]  codebook token embeddings for those positions
         """
 
         # cond: [num_valid, channel_embed_dim]
@@ -1889,11 +1898,11 @@ class MultiCodebookARHead(nn.Module):
 
         x = torch.cat([cond.unsqueeze(1), token_embs], dim=1)  # [num_valid, 8, D]
 
-        # 加通道 & timestep embedding
+        # Add the channel and timestep embeddings.
         x = x + self.channel_embed
         cond_seq = cond.unsqueeze(1) + self.timesteps_embeddings[:, :cond.shape[1]]
 
-        # 通道自回归 attention（用 channel_mask）
+        # Channel-wise causal attention (channel_mask).
         for block in self.channel_blocks:
             self.channel_mask = self.channel_mask.to(x.dtype)
             if self.training:
@@ -2096,8 +2105,10 @@ class LLaDA2MoeModelLM(LLaDA2MoePreTrainedModel, GenerationMixin):
             if labels.dtype not in (torch.long, torch.int, torch.int32, torch.int64):
                 labels = labels.long()
             img_labels = labels.to(hidden_states.device)
-            # Packing (multi-codebook) 时，labels 通常是 [seq_length, num_codebooks] 或 [B, seq_length, num_codebooks]。
-            # `img_ans_mask` 是按“位置 token”展开后的 mask（长度为 B*seq_length），因此不能直接用它去索引展平到 num_codebooks 维度后的张量。
+            # Under packing (multi-codebook) labels are usually [seq_length, num_codebooks]
+            # or [B, seq_length, num_codebooks]. `img_ans_mask` is expanded over
+            # position tokens (length B*seq_length), so it cannot index a tensor that
+            # has already been flattened over the num_codebooks dim.
             if img_labels.dim() == 2:
                 if img_labels.size(-1) == self.num_codebooks:
                     img_labels = img_labels.unsqueeze(0)  # -> [1, seq_length, num_codebooks]
@@ -2170,8 +2181,9 @@ class LLaDA2MoeModelLM(LLaDA2MoePreTrainedModel, GenerationMixin):
             return (logits,)
 
         text_labels = labels.to(hidden_states.device)
-        # Packing 多码本时：labels 常见形状为 [seq_length, num_codebooks]（或 [B, seq_length, num_codebooks]）
-        # 这里文本分支最终只需要“每个位置一个 label”，因此固定取第 0 个码本的 token id。
+        # Under packing (multi-codebook) labels are usually [seq_length, num_codebooks]
+        # or [B, seq_length, num_codebooks]. The text branch needs exactly one label per
+        # position, so it always takes codebook 0's token id.
         if text_labels.dim() == 2:
             if text_labels.size(-1) == self.num_codebooks:
                 text_labels = text_labels.unsqueeze(0)  # -> [1, seq_length, num_codebooks]
@@ -2189,8 +2201,6 @@ class LLaDA2MoeModelLM(LLaDA2MoePreTrainedModel, GenerationMixin):
         hidden_states_text = hidden_states_text[label_mask_text]
         logits_text = self.lm_head(hidden_states_text)
 
-
-        # text_token = logits_text.argmax(dim=-1) ######
 
         if not return_dict:
             output = ((logits_img, logits_text),) + outputs[1:]

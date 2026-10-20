@@ -18,6 +18,11 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+from utils.media_layout import (
+    as_2d as _as_2d,
+    add_break_line_multi_codebook,
+    make_special_2d,
+)
 from utils.generation_utils import setup_seed
 from utils.tokenizer_contract import validate_tokenizer_contract
 from generators.text_understanding_generator import (
@@ -81,25 +86,10 @@ def prepare_image_for_encode(img: Image.Image, max_edge: int = 0, no_upscale: bo
     return img
 
 
-def add_break_line_multi_codebook(tokens: torch.Tensor, H: int, W: int, new_number: int = 0) -> torch.Tensor:
-    if tokens.dim() != 2:
-        raise ValueError(f"Expected tokens shape [seq_len, num_codebooks], got {tokens.shape}")
-    seq_len, num_codebooks = tokens.shape
-    if seq_len != H * W:
-        raise ValueError(f"Token length {seq_len} does not match image size {H}x{W}")
-    tokens = tokens.view(H, W, num_codebooks)
-    pad_row = torch.full((H, 1, num_codebooks), fill_value=new_number, dtype=tokens.dtype, device=tokens.device)
-    tokens = torch.cat([tokens, pad_row], dim=1)
-    return tokens.view(-1, num_codebooks)
 
 
-def _as_2d(token_ids, device='cuda'):
-    t = torch.tensor(token_ids, dtype=torch.int64, device=device)
-    return t.unsqueeze(1).repeat(1, NUM_CODEBOOKS)
 
 
-def make_special_2d(token_id: int, device='cuda') -> torch.Tensor:
-    return torch.full((1, NUM_CODEBOOKS), token_id, dtype=torch.long, device=device)
 
 
 def _append_boa_with_meta(
@@ -202,7 +192,8 @@ def build_sft_user_prefix(tokenizer, system_prompt, user_text, media_token_list=
 def infer_single_turn_text(model, tokenizer, prefix_tokens, prefix_type_ids,
                            gen_length, block_length, timesteps, temperature, device,
                            prefix_turn_ids=None, prefix_block_ids=None, prefix_is_clean=None,
-                           prefix_position_ids=None, generated_turn_id=None, generated_position_start=None):
+                           prefix_position_ids=None, generated_turn_id=None, generated_position_start=None,
+):
     """Single-turn BD text generation using block-wise layout (prefix+prev_clean+mask_block).
     Generates up to gen_length tokens, with early-stop on EOA.
 

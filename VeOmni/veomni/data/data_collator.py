@@ -113,6 +113,13 @@ class DataCollatorWithPadding(DataCollator):
         self.sp_enabled = get_parallel_state().sp_enabled
 
     def __call__(self, features: Sequence[Dict[str, "torch.Tensor"]]) -> Dict[str, "torch.Tensor"]:
+        if any("loss_weights" in feature for feature in features):
+            features = [dict(feature) for feature in features]
+            for feature in features:
+                feature.setdefault(
+                    "loss_weights",
+                    torch.ones(len(feature["input_ids"]), dtype=torch.float32),
+                )
         batch = defaultdict(list)
 
         # batching features
@@ -122,10 +129,30 @@ class DataCollatorWithPadding(DataCollator):
 
         for key in batch.keys():
             # process padding features
-            if key in ["input_ids", "attention_mask", "position_ids", "images_seq_mask"]:
+            if key in [
+                "input_ids",
+                "attention_mask",
+                "attention_mask_ar",
+                "position_ids",
+                "type_position_ids",
+                "turn_ids",
+                "is_clean",
+                "block_ids",
+                "images_seq_mask",
+                "img_input_ids",
+                "text_input_ids",
+                "text_prompt",
+                "text_answer",
+                "img_prompt",
+                "img_answer",
+                "loss_weights",
+            ]:
                 batch[key] = pad_sequence(batch[key], batch_first=True, padding_value=0)
-            elif key in ["labels", "labels_image"]:
+            elif key in ["labels", "labels_image", "img_labels", "text_labels", "text_prompt_labels", "text_answer_labels", "img_prompt_labels", "img_answer_labels"]:
                 batch[key] = pad_sequence(batch[key], batch_first=True, padding_value=IGNORE_INDEX)
+            elif key in ["text_length", "img_length"]:
+                # Length fields are stacked directly; no padding needed.
+                batch[key] = torch.stack(batch[key], dim=0)
             else:
                 batch[key] = default_collate(batch[key])
 
@@ -141,11 +168,34 @@ class DataCollatorWithPacking(DataCollator):
     def __call__(self, features: Sequence[Dict[str, "torch.Tensor"]]) -> Dict[str, "torch.Tensor"]:
         seqlens = torch.tensor([len(feature["input_ids"]) for feature in features], dtype=torch.long)
         batch = {"cu_seqlens": len2culen(seqlens)}
-        for input_name in features[0].keys():
-            if input_name in ("input_ids", "attention_mask", "labels"):
+
+        # Backfill optional multi-turn fields with safe defaults so single-turn samples can be packed alongside multi-turn ones.
+        has_loss_weights = any("loss_weights" in feature for feature in features)
+        for feature in features:
+            L = len(feature["input_ids"])
+            if "is_clean" not in feature:
+                feature["is_clean"] = torch.zeros(L, dtype=torch.long)
+            if "position_ids" not in feature:
+                feature["position_ids"] = torch.arange(L, dtype=torch.long)
+            if "block_ids" not in feature:
+                feature["block_ids"] = torch.full((L,), -1, dtype=torch.long)
+            if has_loss_weights and "loss_weights" not in feature:
+                feature["loss_weights"] = torch.ones(L, dtype=torch.float32)
+
+        keys = set()
+        for feature in features:
+            keys.update(feature.keys())
+
+        for input_name in keys:
+            if input_name in ("input_ids", "attention_mask", "labels", "type_position_ids", "turn_ids", "is_clean", "block_ids", "position_ids", "loss_weights"):
                 batch[input_name] = torch.cat([feature[input_name] for feature in features])
             else:
-                batch[input_name] = default_collate([feature[input_name] for feature in features])
+                # Some example types (e.g. pure text) may not provide optional debug fields like `all_len`.
+                # Use a safe fallback to avoid KeyError during packing collation.
+                if input_name == "all_len":
+                    batch[input_name] = default_collate([feature.get(input_name, 0) for feature in features])
+                else:
+                    batch[input_name] = default_collate([feature[input_name] for feature in features if input_name in feature])
 
         return batch
 
@@ -157,9 +207,16 @@ class DataCollatorWithPositionIDs(DataCollator):
     """
 
     def __call__(self, features: Sequence[Dict[str, "torch.Tensor"]]) -> Dict[str, "torch.Tensor"]:
+        if any("loss_weights" in feature for feature in features):
+            features = [dict(feature) for feature in features]
+            for feature in features:
+                feature.setdefault(
+                    "loss_weights",
+                    torch.ones(len(feature["input_ids"]), dtype=torch.float32),
+                )
         batch = {}
         for input_name in features[0].keys():
-            if input_name in ("input_ids", "attention_mask", "labels", "position_ids"):
+            if input_name in ("input_ids", "attention_mask", "labels", "type_position_ids", "position_ids", "turn_ids", "is_clean", "block_ids", "loss_weights"):
                 batch[input_name] = torch.cat([feature[input_name] for feature in features], dim=-1).unsqueeze(0)
             else:
                 batch[input_name] = default_collate([feature[input_name] for feature in features])

@@ -12,6 +12,15 @@ atoken_inference/checkpoints/
 logfile
 VeOmni/veomni.egg-info/
 third_party/
+data/example_run/
+# Local environments and generated artifacts
+.env.*
+*.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.coverage
+# CANN build artifacts and inference outputs
 output_*/
 kernel_meta/
 fusion_result.json

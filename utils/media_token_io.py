@@ -13,8 +13,8 @@ import re
 import torch
 
 # ============================================================
-# Monkey-patch petrel S3Client 以注入自定义 botocore Config
-# 解决 Ceph 高并发下 read_timeout=60s 导致的超时问题
+# Monkey-patch petrel's S3Client to inject a custom botocore Config, which
+# avoids the read_timeout=60s stalls seen under high object-store concurrency.
 # Lazy-import petrel so local-abs-path workloads can start without
 # loading the native petrel SDK at module import time.
 # ============================================================
@@ -88,15 +88,14 @@ def _patch_petrel_s3_client():
 
 # ============================================================
 
-# 已有的正则不变
 _REMOTE_PREFIX = re.compile(r"^[a-z0-9._-]+:", re.IGNORECASE)  # e.g. my-remote:
 
-# rclone remote name → petrel cluster name 映射。
-# 当 token_path 以 rclone remote 前缀开头、且该 bucket 不在 petrel 默认集群时，
-# 需要在此注册映射，使 petrel 能路由到正确的集群。
-# 通过环境变量 RCLONE_TO_PETREL_CLUSTER_JSON 注入，例如:
+# Maps an rclone remote name to a petrel cluster name. Register a mapping when a
+# token_path starts with an rclone remote prefix and that bucket does not live in
+# petrel's default cluster, so petrel can route to the right one. Injected through
+# the RCLONE_TO_PETREL_CLUSTER_JSON environment variable, e.g.
 #   export RCLONE_TO_PETREL_CLUSTER_JSON='{"my-remote": "my-cluster"}'
-# 本地路径数据不需要配置。
+# Local paths need no configuration.
 _RCLONE_TO_PETREL_CLUSTER = json.loads(os.environ.get("RCLONE_TO_PETREL_CLUSTER_JSON", "{}"))
 
 _WARNED_REMOTES = set()
@@ -104,19 +103,19 @@ _WARNED_REMOTES = set()
 
 def _parse_bucket_key(remote_path: str):
     """
-    支持:
+    Accepts:
       - my-remote:s3://image_tokens/path/to/...
       - s3://image_tokens/path/to/...
       - image_tokens/path/to/...
-    返回 (rclone_remote_or_empty, bucket, key)。
+    Returns (rclone_remote_or_empty, bucket, key).
     """
     p = remote_path.strip()
     rclone_remote = ""
-    if _REMOTE_PREFIX.match(p):           # 去掉 rclone remote 前缀
+    if _REMOTE_PREFIX.match(p):           # strip the rclone remote prefix
         rclone_remote, p = p.split(":", 1)
-    if p.startswith("s3://"):             # 去掉 s3://
+    if p.startswith("s3://"):             # strip s3://
         p = p[5:]
-    p = p.lstrip("/")                     # 防止 key 以 / 开头
+    p = p.lstrip("/")                     # keys must not start with /
     parts = p.split("/", 1)
     bucket = parts[0] if parts else ""
     key = parts[1] if len(parts) == 2 else ""
@@ -125,10 +124,10 @@ def _parse_bucket_key(remote_path: str):
 
 def _to_petrel_path(remote_path: str) -> str:
     """
-    在保持 _parse_bucket_key 行为的基础上，把路径转成
-    petrel Client 可用的标准 s3://bucket/key 形式。
-    若 rclone remote 在 _RCLONE_TO_PETREL_CLUSTER 中有映射，
-    则加上 petrel cluster 前缀（如 cluster2:s3://...）。
+    Convert a path into the standard s3://bucket/key form a petrel Client accepts,
+    keeping _parse_bucket_key's behaviour. If the rclone remote has a mapping in
+    _RCLONE_TO_PETREL_CLUSTER, the petrel cluster prefix is prepended
+    (e.g. my-cluster:s3://...).
     """
     rclone_remote, bucket, key = _parse_bucket_key(remote_path)
     if not bucket or not key:
@@ -149,7 +148,7 @@ def _to_petrel_path(remote_path: str) -> str:
 
 
 def _get_petrel_conf_path() -> str:
-    """从环境变量读取 petrel 配置文件路径，未设置时返回空字符串表示使用默认路径。"""
+    """Petrel config path from the environment; empty string means use the default."""
     return (
         os.environ.get("PETREL_CONF_PATH")
         or os.environ.get("PETRELOSS_CONF")
@@ -189,18 +188,18 @@ def _get_petrel_client(_conf_path: str = ""):
 
 def load_pkl_from_rclone(token_path: str):
     """
-    读取 token pkl：
+    Read a token pkl.
 
-    支持路径形式：
+    Accepted path forms:
       - my-remote:s3://image_tokens/path/to/.../xxx.webp.pkl
       - s3://image_tokens/path/to/.../xxx.webp.pkl
       - image_tokens/path/to/.../xxx.webp.pkl
-      - 以及本地绝对路径：/mnt/xxx/xxx.pkl
+      - local absolute paths, e.g. /data/tokens/xxx.pkl
 
-    返回值：torch.load 反序列化后的对象（通常是一个 dict，含 indices / coords）
+    Returns whatever torch.load deserializes (usually a dict with indices / coords).
     """
 
-    # 1) 本地路径（绝对或相对当前工作目录）：直接走磁盘。
+    # 1) Local path (absolute or relative to the cwd): read straight from disk.
     # `token_path` is commonly passed as a relative .pkl/.pt path from the
     # repository's launch directory; do not mistake it for an object-store key.
     if os.path.isfile(token_path):
@@ -210,20 +209,20 @@ def load_pkl_from_rclone(token_path: str):
     if os.path.isabs(token_path):
         raise FileNotFoundError(f"{token_path} not found.")
 
-    # 2) 远程：通过 petrel sdk 从对象存储读取
-    petrel_path = _to_petrel_path(token_path)  # 会做 bucket/key 校验
+    # 2) Remote: read from object storage through the petrel SDK.
+    petrel_path = _to_petrel_path(token_path)  # validates bucket/key
     client = _get_petrel_client(_get_petrel_conf_path())
 
     last_err = None
     try:
-        # petrel Client.get 返回 bytes
+        # petrel Client.get returns bytes
         data = client.get(petrel_path)
         if not data:
             raise FileNotFoundError(
                 f"{token_path} empty in object storage: {petrel_path}"
             )
 
-        # 和原逻辑一样，用 BytesIO 包一层再 torch.load
+        # Wrap in BytesIO before torch.load, as before
         bio = io.BytesIO(data)
         # Token files are trusted data artifacts and may contain NumPy arrays;
         # PyTorch 2.6's weights-only default rejects those legacy payloads.
@@ -233,7 +232,7 @@ def load_pkl_from_rclone(token_path: str):
     except Exception as e:
         last_err = e
 
-    # 读取失败时，沿用之前“抛出最后一次错误”的风格
+    # On failure, raise the last error seen
     raise last_err if last_err is not None else RuntimeError(
         f"failed to load token from object storage (petrel): {token_path}"
     )
@@ -313,20 +312,20 @@ def load_image_tokens_from_rclone(token_path):
     image_tokens, image_coords = _validate_media_token_schema(
         data_pkl, media_kind="image"
     )
-    max_height = image_coords[:, 2].max().item() + 1  # height: 第三列（索引2）
-    max_width = image_coords[:, 3].max().item() + 1   # width: 第四列（索引3）
+    max_height = image_coords[:, 2].max().item() + 1  # height: column index 2
+    max_width = image_coords[:, 3].max().item() + 1   # width: column index 3
     return image_tokens, max_height, max_width
 
 
 def load_3d_tokens_from_rclone(token_path):
     """
-    加载 atoken 3D token pkl/pt：indices + coords。
+    Load an AToken 3D token pkl/pt: indices + coords.
 
-    支持两种 coords 格式：
-      - 5 列 [batch, t, x, y, z]：旧格式，col2=x, col3=y, col4=z
-      - 3 列 [x, y, z]：新格式，会自动补齐 batch=0, t=0 成 5 列
+    Two coords layouts are accepted:
+      - 5 columns [batch, t, x, y, z]: col2=x, col3=y, col4=z
+      - 3 columns [x, y, z]: padded to 5 columns with batch=0, t=0
 
-    与 2D 命名对应：x→width(W), y→height(H), z→depth(D)。
+    Matching the 2D naming: x -> width (W), y -> height (H), z -> depth (D).
     """
     data_pkl = load_pkl_from_rclone(token_path)
     image_tokens, image_coords = _validate_media_token_schema(
@@ -335,17 +334,17 @@ def load_3d_tokens_from_rclone(token_path):
 
     num_cols = image_coords.shape[1]
     if num_cols == 3:
-        # 新格式：[x, y, z] → 补齐为 [batch=0, t=0, x, y, z]
+        # 3-column form: [x, y, z] -> [batch=0, t=0, x, y, z]
         n = image_coords.shape[0]
         batch_col = torch.zeros((n, 1), dtype=image_coords.dtype, device=image_coords.device)
         t_col = torch.zeros((n, 1), dtype=image_coords.dtype, device=image_coords.device)
         image_coords = torch.cat([batch_col, t_col, image_coords], dim=1)
-        # 取 x, y, z
+        # Take x, y, z
         max_width = image_coords[:, 2].max().item() + 1   # x
         max_height = image_coords[:, 3].max().item() + 1  # y
         max_depth = image_coords[:, 4].max().item() + 1   # z
     elif num_cols == 5:
-        # 旧格式：[batch, t, x, y, z]
+        # 5-column form: [batch, t, x, y, z]
         max_width = image_coords[:, 2].max().item() + 1   # x
         max_height = image_coords[:, 3].max().item() + 1  # y
         max_depth = image_coords[:, 4].max().item() + 1   # z
@@ -357,10 +356,11 @@ def load_3d_tokens_from_rclone(token_path):
 
 def load_video_tokens_from_rclone(token_path):
     """
-    加载 atoken 视频 token pkl：indices + coords。
+    Load an AToken video token pkl: indices + coords.
 
-    coords 格式为 [N, 5]：[batch, t, x, y, z]，其中 t=时序帧组, x=空间宽, y=空间高, z=0。
-    返回 (indices, coords, T, H, W)：T=帧组数, H=空间高, W=空间宽。
+    coords is [N, 5]: [batch, t, x, y, z], where t is the temporal frame group,
+    x is spatial width, y is spatial height and z is 0.
+    Returns (indices, coords, T, H, W): T frame groups, H height, W width.
     """
     data_pkl = load_pkl_from_rclone(token_path)
     video_tokens, video_coords = _validate_media_token_schema(
