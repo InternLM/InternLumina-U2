@@ -22,6 +22,10 @@ from typing import Any, Dict, List, Literal, Optional
 from datetime import datetime
 
 import torch
+try:
+    from torch_npu.contrib import transfer_to_npu
+except ImportError:
+    pass
 import torch.distributed as dist
 from tqdm import trange
 from torch.utils.tensorboard import SummaryWriter

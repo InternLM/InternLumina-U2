@@ -18,6 +18,10 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Literal, Mapping, Optional, Sequence, Tuple
 
 import torch
+try:
+    from torch_npu.contrib import transfer_to_npu
+except ImportError:
+    pass
 import torch.distributed as dist
 
 from tasks import train_sft as base
