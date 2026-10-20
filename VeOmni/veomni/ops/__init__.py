@@ -14,8 +14,7 @@
 
 import torch
 
-from ..utils.device import get_device_type
-from ..utils.import_utils import is_fused_moe_available
+from ..utils.import_utils import is_fused_moe_available, is_torch_npu_available
 from .attention import flash_attention_forward
 from .loss import causallm_loss_function
 
@@ -27,7 +26,9 @@ def _get_fused_moe_kernel():
     """Resolve the fused MoE kernel matching the current device, once per process."""
     global _fused_moe_kernel
     if _fused_moe_kernel is None:
-        if get_device_type() == "npu":
+        # transfer_to_npu aliases torch.cuda onto torch.npu, so device checks that go
+        # through torch.cuda.is_available() report cuda on Ascend. Key off torch_npu.
+        if is_torch_npu_available():
             from .npu_group_gemm import npu_fused_moe_forward
 
             _fused_moe_kernel = npu_fused_moe_forward
